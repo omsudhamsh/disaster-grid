@@ -1,0 +1,93 @@
+[
+  {
+    "id": "INC-001",
+    "location": "Kukatpally",
+    "latitude": 17.4849,
+    "longitude": 78.4138,
+    "type": "Flood",
+    "priority": 94,
+    "people": 32,
+    "urgency": "Critical",
+    "aid": "Rescue + Medical",
+    "source": "Social Media",
+    "time": "8 min ago"
+  },
+  {
+    "id": "INC-002",
+    "location": "LB Nagar",
+    "latitude": 17.3457,
+    "longitude": 78.5522,
+    "type": "Flood",
+    "priority": 87,
+    "people": 21,
+    "urgency": "High",
+    "aid": "Food + Water",
+    "source": "SMS",
+    "time": "14 min ago"
+  },
+  {
+    "id": "INC-003",
+    "location": "Secunderabad",
+    "latitude": 17.4399,
+    "longitude": 78.4983,
+    "type": "Structural Damage",
+    "priority": 81,
+    "people": 16,
+    "urgency": "High",
+    "aid": "Medical",
+    "source": "Satellite",
+    "time": "19 min ago"
+  },
+  {
+    "id": "INC-004",
+    "location": "Mehdipatnam",
+    "latitude": 17.3935,
+    "longitude": 78.4428,
+    "type": "Waterlogging",
+    "priority": 63,
+    "people": 12,
+    "urgency": "Moderate",
+    "aid": "Water",
+    "source": "IoT Sensor",
+    "time": "24 min ago"
+  },
+  {
+    "id": "INC-005",
+    "location": "Charminar",
+    "latitude": 17.3616,
+    "longitude": 78.4747,
+    "type": "Evacuation",
+    "priority": 72,
+    "people": 18,
+    "urgency": "High",
+    "aid": "Evacuation",
+    "source": "Social Media",
+    "time": "31 min ago"
+  },
+  {
+    "id": "INC-006",
+    "location": "Miyapur",
+    "latitude": 17.4969,
+    "longitude": 78.3498,
+    "type": "Food Shortage",
+    "priority": 55,
+    "people": 11,
+    "urgency": "Moderate",
+    "aid": "Food",
+    "source": "SMS",
+    "time": "38 min ago"
+  },
+  {
+    "id": "INC-007",
+    "location": "Uppal",
+    "latitude": 17.4058,
+    "longitude": 78.5591,
+    "type": "Flood",
+    "priority": 68,
+    "people": 15,
+    "urgency": "High",
+    "aid": "Medical + Rescue",
+    "source": "IoT Sensor",
+    "time": "44 min ago"
+  }
+]
