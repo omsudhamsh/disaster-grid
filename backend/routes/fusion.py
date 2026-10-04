@@ -2,91 +2,53 @@ import json
 from pathlib import Path
 
 from fastapi import APIRouter
-from services.fusion import build_fusion
+
+from services import nlp
+from services.fusion import build_grid_fusion
 
 router = APIRouter()
 
-DATA_FILE = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "incidents.json"
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
+INCIDENTS_FILE = BASE_DIR / "data" / "incidents.json"
+MESSAGES_FILE = BASE_DIR / "data" / "messages.json"
+SENSORS_FILE = BASE_DIR / "data" / "sensors.json"
 
 
-def load_incidents():
-    if not DATA_FILE.exists():
+def _load(path):
+    if not path.exists():
         return []
-
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
+    with path.open("r", encoding="utf-8") as file:
         return json.load(file)
 
 
 @router.get("/")
 def get_fusion_data():
+    """Ranked multimodal fusion heat map with per-cell XAI rationale."""
+    incidents = _load(INCIDENTS_FILE)
+    raw_messages = _load(MESSAGES_FILE)
+    sensors = _load(SENSORS_FILE)
 
-    incidents = load_incidents()
-
-    if not incidents:
-        return {
-            "status": "no_data",
-            "message": "No incident data available",
-            "fusion": None,
+    # Run the code-mixed NLP extractor over every crisis report so the
+    # fusion engine can read real urgency levels instead of defaults.
+    messages = [
+        {
+            **message,
+            "analysis": nlp.analyze_message(
+                message.get("text", ""),
+                fallback_state=message.get("state"),
+                fallback_location=message.get("location"),
+            ),
         }
+        for message in raw_messages
+    ]
 
-    # Highest priority incident
-    highest = max(
-        incidents,
-        key=lambda incident: incident.get("priority", 0)
-    )
-
-    priority = highest.get("priority", 0)
-    people = highest.get("people", 0)
-
-    # Confidence based on multiple available sources
-    source_count = len(
-        set(
-            incident.get("source")
-            for incident in incidents
-            if incident.get("source")
-        )
-    )
-
-    confidence = min(70 + source_count * 5, 95)
-
-    aid = highest.get("aid", "General Assistance")
-
-    if "Rescue" in aid and "Medical" in aid:
-        recommendation = "Immediate Rescue + Medical Response"
-    elif "Rescue" in aid:
-        recommendation = "Immediate Rescue Response"
-    elif "Medical" in aid:
-        recommendation = "Medical Response"
-    elif "Evacuation" in aid:
-        recommendation = "Evacuation Support"
-    else:
-        recommendation = f"{aid} Response"
+    cells = build_grid_fusion(incidents, messages, sensors)
 
     return {
         "status": "success",
-        "fusion": {
-            **build_fusion(highest),
-            "people_affected": people,
-            "priority": build_fusion(highest)["priority"],
-            "confidence": confidence,
-            "source_count": source_count,
-            "sources": [
-                {
-                    "name": "Crisis Reports",
-                    "type": highest.get("source"),
-                    "signal": f"{people} people affected",
-                },
-                {
-                    "name": "Incident Intelligence",
-                    "type": highest.get("type"),
-                    "signal": f"Priority score {priority}",
-                },
-            ],
-            "required_aid": aid,
-            "recommendation": recommendation,
-        },
+        "formula": "Priority = 0.40 * Vision + 0.35 * NLP + 0.25 * Sensor",
+        "weights": {"vision": 0.40, "nlp": 0.35, "sensor": 0.25},
+        "cell_count": len(cells),
+        "cells": cells,
+        "top": cells[0] if cells else None,
     }

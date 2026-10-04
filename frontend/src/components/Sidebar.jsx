@@ -9,6 +9,7 @@ import {
   GitMerge,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useUser } from "@clerk/react";
 
 const navigation = [
   {
@@ -49,6 +50,9 @@ const navigation = [
 ];
 
 function Sidebar() {
+  const { user, isLoaded } = useUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress || "Guest";
+
   return (
     <aside className="w-64 min-h-screen bg-slate-950 text-white flex flex-col shrink-0">
 
@@ -108,7 +112,7 @@ function Sidebar() {
       </nav>
 
       {/* System status */}
-      <div className="p-4 border-t border-slate-800">
+      <div className="p-4 border-t border-slate-800 space-y-3">
 
         <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-900">
 
@@ -124,6 +128,24 @@ function Sidebar() {
 
             <p className="text-xs text-emerald-400 mt-0.5">
               Operational
+            </p>
+          </div>
+
+        </div>
+
+        <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-900/60 border border-slate-800">
+
+          <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-emerald-400">
+            {(isLoaded ? email.charAt(0) : "?").toUpperCase()}
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs text-slate-300 truncate">
+              {isLoaded ? email : "Session loading..."}
+            </p>
+
+            <p className="text-[10px] text-slate-500 mt-0.5">
+              {isLoaded ? "Clerk session active" : "Awaiting auth"}
             </p>
           </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.heat";
+import { apiPath } from "../services/api";
 
 const SOUTH_INDIA_CENTER = [13.0827, 80.2707];
 const INDIA_BOUNDS = [[6.0, 68.0], [35.0, 97.5]];
@@ -233,7 +234,7 @@ function DisasterMap() {
   // ==================================================
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/incidents/")
+    fetch(apiPath("/api/incidents/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch incidents");
@@ -251,6 +252,44 @@ function DisasterMap() {
         );
       });
   }, []);
+
+  // ==================================================
+  // AUTO-FIT BOUNDS TO DATA
+  // ==================================================
+
+  const hasFitted = useRef(false);
+
+  useEffect(() => {
+    const map = mapInstance.current;
+
+    if (!map || !incidents.length || hasFitted.current) {
+      return;
+    }
+
+    const points = incidents
+      .map((incident) => [
+        Number(incident.latitude),
+        Number(incident.longitude),
+      ])
+      .filter(
+        (point) =>
+          Number.isFinite(point[0]) &&
+          Number.isFinite(point[1])
+      );
+
+    if (points.length === 0) {
+      return;
+    }
+
+    hasFitted.current = true;
+
+    // Auto-fit the viewport to the marker spread,
+    // but never zoom in closer than the regional view.
+    map.fitBounds(
+      L.latLngBounds(points).pad(0.15),
+      { maxZoom: 7, padding: [32, 32] }
+    );
+  }, [incidents]);
 
   // ==================================================
   // CREATE MAP
@@ -582,11 +621,13 @@ function DisasterMap() {
           left-4
           top-4
           z-[1000]
-          rounded-lg
-          bg-white
+          rounded-md
+          bg-[#0f172a]
           px-4
           py-3
-          shadow-md
+          shadow-lg
+          border
+          border-[#1e293b]
         "
       >
         <div className="flex items-center gap-2">
@@ -596,7 +637,7 @@ function DisasterMap() {
               h-2
               w-2
               rounded-full
-              bg-green-500
+              bg-emerald-500
             "
           />
 
@@ -605,7 +646,7 @@ function DisasterMap() {
               text-xs
               font-bold
               tracking-wide
-              text-slate-700
+              text-slate-200
             "
           >
             LIVE CRISIS MAP
@@ -613,7 +654,7 @@ function DisasterMap() {
 
         </div>
 
-        <div className="mt-1 text-xs text-slate-500">
+        <div className="mt-1 text-xs text-slate-400">
           {incidents.length} active incidents
         </div>
       </div>
@@ -626,10 +667,12 @@ function DisasterMap() {
           bottom-4
           right-4
           z-[1000]
-          rounded-xl
-          bg-white
+          rounded-md
+          bg-[#0f172a]
           p-4
           shadow-lg
+          border
+          border-[#1e293b]
         "
       >
 
@@ -640,7 +683,7 @@ function DisasterMap() {
             font-bold
             uppercase
             tracking-wide
-            text-slate-600
+            text-slate-300
           "
         >
           Crisis Intensity
@@ -670,9 +713,10 @@ function DisasterMap() {
           className="
             mt-2
             border-t
+            border-slate-700
             pt-2
             text-[10px]
-            text-slate-400
+            text-slate-500
           "
         >
           Only reported crisis areas

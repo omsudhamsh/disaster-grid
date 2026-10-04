@@ -1,7 +1,8 @@
 [
   {
     "id": "INC-001",
-    "location": "Kukatpally, Telangana",
+    "location": "Kukatpally",
+    "state": "Telangana",
     "latitude": 17.4849,
     "longitude": 78.4138,
     "type": "Flood",
@@ -14,7 +15,8 @@
   },
   {
     "id": "INC-002",
-    "location": "LB Nagar, Telangana",
+    "location": "LB Nagar",
+    "state": "Telangana",
     "latitude": 17.3457,
     "longitude": 78.5522,
     "type": "Flood",
@@ -27,7 +29,8 @@
   },
   {
     "id": "INC-003",
-    "location": "Secunderabad, Telangana",
+    "location": "Secunderabad",
+    "state": "Telangana",
     "latitude": 17.4399,
     "longitude": 78.4983,
     "type": "Structural Damage",
@@ -40,7 +43,8 @@
   },
   {
     "id": "INC-004",
-    "location": "Mehdipatnam, Telangana",
+    "location": "Mehdipatnam",
+    "state": "Telangana",
     "latitude": 17.3935,
     "longitude": 78.4428,
     "type": "Waterlogging",
@@ -53,7 +57,8 @@
   },
   {
     "id": "INC-005",
-    "location": "Charminar, Telangana",
+    "location": "Charminar",
+    "state": "Telangana",
     "latitude": 17.3616,
     "longitude": 78.4747,
     "type": "Evacuation",
@@ -66,7 +71,8 @@
   },
   {
     "id": "INC-006",
-    "location": "Miyapur, Telangana",
+    "location": "Miyapur",
+    "state": "Telangana",
     "latitude": 17.4969,
     "longitude": 78.3498,
     "type": "Food Shortage",
@@ -79,7 +85,8 @@
   },
   {
     "id": "INC-007",
-    "location": "Uppal, Telangana",
+    "location": "Uppal",
+    "state": "Telangana",
     "latitude": 17.4058,
     "longitude": 78.5591,
     "type": "Flood",
@@ -92,9 +99,10 @@
   },
   {
     "id": "INC-008",
-    "location": "Vijayawada, Andhra Pradesh",
+    "location": "Vijayawada",
+    "state": "Andhra Pradesh",
     "latitude": 16.5062,
-    "longitude": 80.6480,
+    "longitude": 80.648,
     "type": "Flood",
     "priority": 91,
     "people": 46,
@@ -105,7 +113,8 @@
   },
   {
     "id": "INC-009",
-    "location": "Visakhapatnam, Andhra Pradesh",
+    "location": "Visakhapatnam",
+    "state": "Andhra Pradesh",
     "latitude": 17.6868,
     "longitude": 83.2185,
     "type": "Cyclone",
@@ -118,7 +127,22 @@
   },
   {
     "id": "INC-010",
-    "location": "Chennai, Tamil Nadu",
+    "location": "Anantapur",
+    "state": "Andhra Pradesh",
+    "latitude": 14.6836,
+    "longitude": 77.6005,
+    "type": "Earthquake",
+    "priority": 78,
+    "people": 24,
+    "urgency": "High",
+    "aid": "Medical + Rescue",
+    "source": "USGS Feed",
+    "time": "26 min ago"
+  },
+  {
+    "id": "INC-011",
+    "location": "Chennai",
+    "state": "Tamil Nadu",
     "latitude": 13.0827,
     "longitude": 80.2707,
     "type": "Flood",
@@ -130,8 +154,9 @@
     "time": "7 min ago"
   },
   {
-    "id": "INC-011",
-    "location": "Coimbatore, Tamil Nadu",
+    "id": "INC-012",
+    "location": "Coimbatore",
+    "state": "Tamil Nadu",
     "latitude": 11.0168,
     "longitude": 76.9558,
     "type": "Structural Damage",
@@ -143,8 +168,23 @@
     "time": "36 min ago"
   },
   {
-    "id": "INC-012",
-    "location": "Bengaluru, Karnataka",
+    "id": "INC-013",
+    "location": "Salem",
+    "state": "Tamil Nadu",
+    "latitude": 11.6643,
+    "longitude": 78.1382,
+    "type": "Wildfire",
+    "priority": 76,
+    "people": 14,
+    "urgency": "High",
+    "aid": "Rescue",
+    "source": "IMD Alert",
+    "time": "41 min ago"
+  },
+  {
+    "id": "INC-014",
+    "location": "Bengaluru",
+    "state": "Karnataka",
     "latitude": 12.9716,
     "longitude": 77.5946,
     "type": "Waterlogging",
@@ -156,10 +196,11 @@
     "time": "16 min ago"
   },
   {
-    "id": "INC-013",
-    "location": "Mangaluru, Karnataka",
+    "id": "INC-015",
+    "location": "Mangaluru",
+    "state": "Karnataka",
     "latitude": 12.9141,
-    "longitude": 74.8560,
+    "longitude": 74.856,
     "type": "Landslide",
     "priority": 82,
     "people": 17,
@@ -169,8 +210,23 @@
     "time": "42 min ago"
   },
   {
-    "id": "INC-014",
-    "location": "Kochi, Kerala",
+    "id": "INC-016",
+    "location": "Hassan",
+    "state": "Karnataka",
+    "latitude": 13.0058,
+    "longitude": 76.1139,
+    "type": "Flood",
+    "priority": 69,
+    "people": 22,
+    "urgency": "Moderate",
+    "aid": "Food + Water",
+    "source": "SMS",
+    "time": "47 min ago"
+  },
+  {
+    "id": "INC-017",
+    "location": "Kochi",
+    "state": "Kerala",
     "latitude": 9.9312,
     "longitude": 76.2673,
     "type": "Flood",
@@ -182,10 +238,11 @@
     "time": "13 min ago"
   },
   {
-    "id": "INC-015",
-    "location": "Wayanad, Kerala",
+    "id": "INC-018",
+    "location": "Wayanad",
+    "state": "Kerala",
     "latitude": 11.6854,
-    "longitude": 76.1320,
+    "longitude": 76.132,
     "type": "Landslide",
     "priority": 93,
     "people": 64,

@@ -24,8 +24,8 @@ body {
     "Segoe UI",
     sans-serif;
 
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
 button,
@@ -33,4 +33,28 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+/* Tactical dark scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border: 2px solid #0f172a;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.35);
 }

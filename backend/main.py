@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes.incidents import router as incidents_router
+from routes.crisis import router as crisis_router
 from routes.fusion import router as fusion_router
-from routes.sensors import router as sensors_router
+from routes.incidents import router as incidents_router
 from routes.imagery import router as imagery_router
-
+from routes.resources import router as resources_router
+from routes.sensors import router as sensors_router
 
 app = FastAPI(
     title="Disaster Grid API",
@@ -13,21 +14,24 @@ app = FastAPI(
     version="1.0.0",
 )
 
-
-# Allow React frontend to communicate with FastAPI
+# Allow the React frontend to communicate with FastAPI.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 app.include_router(
     incidents_router,
     prefix="/api/incidents",
     tags=["Incidents"],
+)
+app.include_router(
+    crisis_router,
+    prefix="/api/crisis",
+    tags=["Crisis"],
 )
 app.include_router(
     fusion_router,
@@ -44,6 +48,11 @@ app.include_router(
     prefix="/api/imagery",
     tags=["Imagery"],
 )
+app.include_router(
+    resources_router,
+    prefix="/api/resources",
+    tags=["Resources"],
+)
 
 
 @app.get("/")
@@ -57,6 +66,4 @@ def root():
 
 @app.get("/health")
 def health():
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}
