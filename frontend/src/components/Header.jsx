@@ -1,6 +1,14 @@
- import { Bell, Radio } from "lucide-react";
+import { Bell, Radio } from "lucide-react";
+import {
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  useAuth,
+} from "@clerk/react";
 
 function Header() {
+  const { isSignedIn } = useAuth();
+
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
 
@@ -30,9 +38,22 @@ function Header() {
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
         </button>
 
-        <div className="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-semibold">
-          DG
-        </div>
+        {!isSignedIn && (
+          <div className="flex items-center gap-2">
+            <SignInButton mode="modal">
+              <button className="rounded-lg px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100">
+                Sign in
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white hover:bg-slate-800">
+                Sign up
+              </button>
+            </SignUpButton>
+          </div>
+        )}
+
+        {isSignedIn && <UserButton afterSignOutUrl="/" />}
 
       </div>
 

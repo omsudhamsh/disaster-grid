@@ -1,0 +1,7 @@
+[
+	{"id":"SEN-TG-01","name":"Musi River Gauge","location":"Hyderabad, Telangana","latitude":17.3850,"longitude":78.4867,"status":"Warning","water_level":4.8,"pressure":1004,"temperature":29,"alert_level":72,"last_reading":"live"},
+	{"id":"SEN-AP-01","name":"Krishna Basin Gauge","location":"Vijayawada, Andhra Pradesh","latitude":16.5062,"longitude":80.6480,"status":"Critical","water_level":6.2,"pressure":1001,"temperature":28,"alert_level":89,"last_reading":"live"},
+	{"id":"SEN-TN-01","name":"Chennai Rainfall Node","location":"Chennai, Tamil Nadu","latitude":13.0827,"longitude":80.2707,"status":"Warning","water_level":3.7,"pressure":1006,"temperature":30,"alert_level":76,"last_reading":"live"},
+	{"id":"SEN-KA-01","name":"Bellandur Drain Monitor","location":"Bengaluru, Karnataka","latitude":12.9716,"longitude":77.5946,"status":"Warning","water_level":3.1,"pressure":1008,"temperature":25,"alert_level":65,"last_reading":"live"},
+	{"id":"SEN-KL-01","name":"Periyar River Gauge","location":"Kochi, Kerala","latitude":9.9312,"longitude":76.2673,"status":"Online","water_level":2.4,"pressure":1010,"temperature":27,"alert_level":38,"last_reading":"live"}
+]

@@ -1,7 +1,7 @@
 [
   {
     "id": "INC-001",
-    "location": "Kukatpally",
+    "location": "Kukatpally, Telangana",
     "latitude": 17.4849,
     "longitude": 78.4138,
     "type": "Flood",
@@ -14,7 +14,7 @@
   },
   {
     "id": "INC-002",
-    "location": "LB Nagar",
+    "location": "LB Nagar, Telangana",
     "latitude": 17.3457,
     "longitude": 78.5522,
     "type": "Flood",
@@ -27,7 +27,7 @@
   },
   {
     "id": "INC-003",
-    "location": "Secunderabad",
+    "location": "Secunderabad, Telangana",
     "latitude": 17.4399,
     "longitude": 78.4983,
     "type": "Structural Damage",
@@ -40,7 +40,7 @@
   },
   {
     "id": "INC-004",
-    "location": "Mehdipatnam",
+    "location": "Mehdipatnam, Telangana",
     "latitude": 17.3935,
     "longitude": 78.4428,
     "type": "Waterlogging",
@@ -53,7 +53,7 @@
   },
   {
     "id": "INC-005",
-    "location": "Charminar",
+    "location": "Charminar, Telangana",
     "latitude": 17.3616,
     "longitude": 78.4747,
     "type": "Evacuation",
@@ -66,7 +66,7 @@
   },
   {
     "id": "INC-006",
-    "location": "Miyapur",
+    "location": "Miyapur, Telangana",
     "latitude": 17.4969,
     "longitude": 78.3498,
     "type": "Food Shortage",
@@ -79,7 +79,7 @@
   },
   {
     "id": "INC-007",
-    "location": "Uppal",
+    "location": "Uppal, Telangana",
     "latitude": 17.4058,
     "longitude": 78.5591,
     "type": "Flood",
@@ -89,5 +89,109 @@
     "aid": "Medical + Rescue",
     "source": "IoT Sensor",
     "time": "44 min ago"
+  },
+  {
+    "id": "INC-008",
+    "location": "Vijayawada, Andhra Pradesh",
+    "latitude": 16.5062,
+    "longitude": 80.6480,
+    "type": "Flood",
+    "priority": 91,
+    "people": 46,
+    "urgency": "Critical",
+    "aid": "Rescue + Water",
+    "source": "Social Media",
+    "time": "11 min ago"
+  },
+  {
+    "id": "INC-009",
+    "location": "Visakhapatnam, Andhra Pradesh",
+    "latitude": 17.6868,
+    "longitude": 83.2185,
+    "type": "Cyclone",
+    "priority": 84,
+    "people": 28,
+    "urgency": "High",
+    "aid": "Evacuation + Medical",
+    "source": "IMD Alert",
+    "time": "23 min ago"
+  },
+  {
+    "id": "INC-010",
+    "location": "Chennai, Tamil Nadu",
+    "latitude": 13.0827,
+    "longitude": 80.2707,
+    "type": "Flood",
+    "priority": 89,
+    "people": 58,
+    "urgency": "Critical",
+    "aid": "Rescue + Medical",
+    "source": "Social Media",
+    "time": "7 min ago"
+  },
+  {
+    "id": "INC-011",
+    "location": "Coimbatore, Tamil Nadu",
+    "latitude": 11.0168,
+    "longitude": 76.9558,
+    "type": "Structural Damage",
+    "priority": 73,
+    "people": 9,
+    "urgency": "High",
+    "aid": "Medical",
+    "source": "Satellite",
+    "time": "36 min ago"
+  },
+  {
+    "id": "INC-012",
+    "location": "Bengaluru, Karnataka",
+    "latitude": 12.9716,
+    "longitude": 77.5946,
+    "type": "Waterlogging",
+    "priority": 77,
+    "people": 31,
+    "urgency": "High",
+    "aid": "Rescue + Water",
+    "source": "IoT Sensor",
+    "time": "16 min ago"
+  },
+  {
+    "id": "INC-013",
+    "location": "Mangaluru, Karnataka",
+    "latitude": 12.9141,
+    "longitude": 74.8560,
+    "type": "Landslide",
+    "priority": 82,
+    "people": 17,
+    "urgency": "High",
+    "aid": "Rescue",
+    "source": "District Control Room",
+    "time": "42 min ago"
+  },
+  {
+    "id": "INC-014",
+    "location": "Kochi, Kerala",
+    "latitude": 9.9312,
+    "longitude": 76.2673,
+    "type": "Flood",
+    "priority": 86,
+    "people": 39,
+    "urgency": "Critical",
+    "aid": "Evacuation + Food",
+    "source": "Social Media",
+    "time": "13 min ago"
+  },
+  {
+    "id": "INC-015",
+    "location": "Wayanad, Kerala",
+    "latitude": 11.6854,
+    "longitude": 76.1320,
+    "type": "Landslide",
+    "priority": 93,
+    "people": 64,
+    "urgency": "Critical",
+    "aid": "Rescue + Medical",
+    "source": "Satellite",
+    "time": "28 min ago"
   }
 ]

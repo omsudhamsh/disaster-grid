@@ -7,7 +7,6 @@ import {
   Radio,
   Wifi,
   AlertTriangle,
-  CheckCircle,
 } from "lucide-react";
 
 import Sidebar from "../components/Sidebar";

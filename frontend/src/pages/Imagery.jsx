@@ -14,21 +14,58 @@ import Header from "../components/Header";
 
 function Imagery() {
   const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
   const [analyzed, setAnalyzed] = useState(false);
+  const [result, setResult] = useState(null);
+  const [provider, setProvider] = useState("");
+  const [storageStatus, setStorageStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
+  const analyzeFile = async (uploadedFile) => {
+    if (!uploadedFile) return;
 
-    if (!file) return;
+    setLoading(true);
+    setError("");
+    const formData = new FormData();
+    formData.append("image", uploadedFile);
 
-    setImage(URL.createObjectURL(file));
-    setAnalyzed(false);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/imagery/analyze", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Image analysis failed");
+      setResult(data.result || null);
+      setProvider(data.provider || "unavailable");
+      setStorageStatus(data.storage_status || "stored");
+      setAnalyzed(true);
+    } catch (analysisError) {
+      setError(analysisError.message);
+      setAnalyzed(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const analyzeImage = () => {
-    if (!image) return;
+  const handleImageUpload = (event) => {
+    const uploadedFile = event.target.files[0];
 
-    setAnalyzed(true);
+    if (!uploadedFile) return;
+
+    setImage(URL.createObjectURL(uploadedFile));
+    setFile(uploadedFile);
+    setAnalyzed(false);
+    setResult(null);
+    setProvider("");
+    setStorageStatus("");
+    setError("");
+    analyzeFile(uploadedFile);
+  };
+
+  const analyzeImage = async () => {
+    analyzeFile(file);
   };
 
   return (
@@ -120,10 +157,11 @@ function Imagery() {
 
                   <button
                     onClick={analyzeImage}
+                    disabled={loading}
                     className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white hover:bg-slate-800"
                   >
                     <Brain size={18} />
-                    Analyze Imagery
+                    {loading ? "Analyzing..." : "Analyze Imagery"}
                   </button>
                 </div>
               )}
@@ -145,7 +183,7 @@ function Imagery() {
                 {analyzed && (
                   <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700">
                     <CheckCircle size={15} />
-                    Analysis Complete
+                    {provider === "gemini" ? "Analysis Complete" : "Analysis Fallback"}
                   </div>
                 )}
               </div>
@@ -171,19 +209,19 @@ function Imagery() {
                 <div className="mt-6 space-y-4">
                   <ResultCard
                     label="Detected Damage"
-                    value="Severe Structural Damage"
+                    value={result?.disaster_type || "Not classified"}
                     icon={<Building2 size={20} />}
                   />
 
                   <ResultCard
                     label="Affected Structures"
-                    value="18 Buildings"
+                    value={`${result?.affected_structures ?? 0} Structures`}
                     icon={<AlertTriangle size={20} />}
                   />
 
                   <ResultCard
                     label="Estimated Severity"
-                    value="82 / 100"
+                    value={`${result?.severity_score ?? 0} / 100`}
                     icon={<Activity size={20} />}
                   />
 
@@ -194,18 +232,33 @@ function Imagery() {
                       </span>
 
                       <span className="font-semibold text-slate-900">
-                        91%
+                        {result?.confidence ?? 0}%
                       </span>
                     </div>
 
                     <div className="h-2 overflow-hidden rounded-full bg-slate-200">
                       <div
                         className="h-full rounded-full bg-slate-900"
-                        style={{ width: "91%" }}
+                        style={{ width: `${result?.confidence ?? 0}%` }}
                       />
                     </div>
                   </div>
                 </div>
+              )}
+              {error && (
+                <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                  {error}
+                </p>
+              )}
+              {analyzed && result?.structural_damage && (
+                <p className="mt-4 text-sm leading-6 text-slate-600">
+                  {result.structural_damage}
+                </p>
+              )}
+              {analyzed && provider === "gemini" && storageStatus.startsWith("unavailable") && (
+                <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                  Gemini analysis completed, but Supabase storage is unavailable. Create the configured imagery bucket and retry.
+                </p>
               )}
             </section>
           </div>

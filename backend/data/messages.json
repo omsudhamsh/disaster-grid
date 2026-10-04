@@ -1,0 +1,7 @@
+[
+	{"id":"MSG-001","state":"Telangana","location":"Kukatpally","text":"Flood water is rising near Kukatpally and 20 people are trapped; medical help urgently required.","urgency":"Critical","people":20,"time":"8 min ago"},
+	{"id":"MSG-002","state":"Andhra Pradesh","location":"Vijayawada","text":"Families near Prakasam Barrage need boats and drinking water after the river overflowed.","urgency":"High","people":34,"time":"12 min ago"},
+	{"id":"MSG-003","state":"Tamil Nadu","location":"Chennai","text":"Water entered ground-floor homes in Velachery; elderly residents need evacuation support.","urgency":"Critical","people":18,"time":"15 min ago"},
+	{"id":"MSG-004","state":"Karnataka","location":"Bengaluru","text":"Vehicles stranded in Whitefield waterlogging, please send rescue teams immediately.","urgency":"High","people":11,"time":"19 min ago"},
+	{"id":"MSG-005","state":"Kerala","location":"Wayanad","text":"Landslide blocked the road near Meppadi and several families are missing; rescue required.","urgency":"Critical","people":27,"time":"25 min ago"}
+]

@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes.incidents import router as incidents_router
 from routes.fusion import router as fusion_router
+from routes.sensors import router as sensors_router
+from routes.imagery import router as imagery_router
 
 
 app = FastAPI(
@@ -31,6 +33,16 @@ app.include_router(
     fusion_router,
     prefix="/api/fusion",
     tags=["Fusion"],
+)
+app.include_router(
+    sensors_router,
+    prefix="/api/sensors",
+    tags=["Sensors"],
+)
+app.include_router(
+    imagery_router,
+    prefix="/api/imagery",
+    tags=["Imagery"],
 )
 
 

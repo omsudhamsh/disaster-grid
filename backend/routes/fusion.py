@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from fastapi import APIRouter
+from services.fusion import build_fusion
 
 router = APIRouter()
 
@@ -52,15 +53,6 @@ def get_fusion_data():
 
     confidence = min(70 + source_count * 5, 95)
 
-    if priority >= 85:
-        severity = "Critical"
-    elif priority >= 70:
-        severity = "High"
-    elif priority >= 50:
-        severity = "Moderate"
-    else:
-        severity = "Low"
-
     aid = highest.get("aid", "General Assistance")
 
     if "Rescue" in aid and "Medical" in aid:
@@ -77,11 +69,9 @@ def get_fusion_data():
     return {
         "status": "success",
         "fusion": {
-            "location": highest.get("location"),
-            "disaster_type": highest.get("type"),
+            **build_fusion(highest),
             "people_affected": people,
-            "severity": severity,
-            "priority": priority,
+            "priority": build_fusion(highest)["priority"],
             "confidence": confidence,
             "source_count": source_count,
             "sources": [

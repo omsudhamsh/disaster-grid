@@ -3,7 +3,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.heat";
 
-const HYDERABAD_CENTER = [17.405, 78.48];
+const SOUTH_INDIA_CENTER = [13.0827, 80.2707];
+const INDIA_BOUNDS = [[6.0, 68.0], [35.0, 97.5]];
 
 function getSeverity(priority) {
   if (priority >= 85) return "critical";
@@ -261,9 +262,11 @@ function DisasterMap() {
     }
 
     const map = L.map(mapRef.current).setView(
-      HYDERABAD_CENTER,
-      11
+      SOUTH_INDIA_CENTER,
+      6
     );
+    map.setMaxBounds(INDIA_BOUNDS);
+    map.options.maxBoundsViscosity = 0.8;
 
     L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -426,10 +429,6 @@ function DisasterMap() {
     const popupLayers = [];
 
     clusters.forEach((cluster) => {
-      const config =
-        getHeatConfig(
-          cluster.severity
-        );
 
       /*
        * Invisible interaction area.
