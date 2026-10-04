@@ -15,6 +15,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { reportIncident } from "../services/incidentServices";
+import { apiGet } from "../services/api";
 
 const EMPTY_FORM = {
   location: "",
@@ -64,13 +65,7 @@ function Incidents() {
 
     (async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/incidents/");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch incidents");
-        }
-
-        const data = await response.json();
+        const data = await apiGet("/api/incidents/");
 
         if (!active) {
           return;
