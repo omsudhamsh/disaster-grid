@@ -6,6 +6,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from services import nlp
+from services.geo import is_inside_india
+from services.live_incidents import (
+    create_user_report,
+    get_aggregated_incidents,
+)
 
 router = APIRouter()
 
@@ -25,29 +30,6 @@ _URGENCY_PRIORITY = {
 }
 
 
-def load_incidents():
-    if not DATA_FILE.exists():
-        return []
-    with DATA_FILE.open("r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def _save_incidents(incidents):
-    with DATA_FILE.open("w", encoding="utf-8") as file:
-        json.dump(incidents, file, indent=2, ensure_ascii=False)
-
-
-def _next_id(incidents):
-    highest = 0
-    for incident in incidents:
-        raw = str(incident.get("id", ""))
-        if raw.startswith("INC-"):
-            digits = raw.split("-", 1)[1]
-            if digits.isdigit():
-                highest = max(highest, int(digits))
-    return f"INC-{highest + 1:03d}"
-
-
 class IncidentReport(BaseModel):
     location: str = Field(min_length=2, max_length=120)
     state: str | None = Field(default=None, max_length=60)
@@ -61,46 +43,49 @@ class IncidentReport(BaseModel):
 
 
 @router.get("/")
-def get_incidents():
-    incidents = load_incidents()
+async def get_incidents():
+    """Live incident registry: NASA EONET + USGS + ReliefWeb feeds merged
+    with citizen reports. Static/random sample data is no longer served."""
+    incidents, sources, updated_at = await get_aggregated_incidents()
     return {
         "count": len(incidents),
         "incidents": incidents,
+        "live_sources": sources,
+        "generated_at": updated_at,
     }
 
 
 @router.post("/", status_code=201)
 def report_incident(payload: IncidentReport):
     """Report a new live incident; persisted to the incident registry."""
+    if not is_inside_india(payload.latitude, payload.longitude):
+        raise HTTPException(
+            status_code=422,
+            detail="Incident reports are restricted to locations inside India",
+        )
+
     urgency = payload.urgency
     if urgency not in _URGENCY_PRIORITY:
         urgency = "Moderate"
 
-    with _write_lock:
-        incidents = load_incidents()
-        incident = {
-            "id": _next_id(incidents),
-            "location": payload.location.strip(),
-            "state": payload.state or nlp.analyze_message(payload.location).get("state"),
-            "latitude": payload.latitude,
-            "longitude": payload.longitude,
-            "type": payload.type,
-            "priority": _URGENCY_PRIORITY[urgency],
-            "people": payload.people,
-            "urgency": urgency,
-            "aid": payload.aid,
-            "source": payload.source,
-            "time": "just now",
-        }
-        incidents.insert(0, incident)
-        _save_incidents(incidents)
+    incident = create_user_report({
+        "location": payload.location,
+        "state": payload.state or nlp.analyze_message(payload.location).get("state"),
+        "latitude": payload.latitude,
+        "longitude": payload.longitude,
+        "type": payload.type,
+        "priority": _URGENCY_PRIORITY[urgency],
+        "people": payload.people,
+        "aid": payload.aid,
+        "source": payload.source,
+    })
 
     return {"created": True, "incident": incident}
 
 
 @router.get("/{incident_id}")
-def get_incident(incident_id: str):
-    incidents = load_incidents()
+async def get_incident(incident_id: str):
+    incidents, _, _ = await get_aggregated_incidents()
     for incident in incidents:
         if incident.get("id") == incident_id:
             return incident

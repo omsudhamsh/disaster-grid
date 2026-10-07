@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "dahl": {
+      "name": "Dahl",
+      "npm": "@ai-sdk/openai-compatible",
+      "env": [
+        "DAHL_API_KEY"
+      ],
+      "options": {
+        "baseURL": "https://inference.dahl.global/v1",
+        "apiKey": "dahl_88HdZit49BaAVT4gBtpMQK3pSgkzEXqte"
+      },
+      "models": {
+        "zai-org/GLM-5.3-Flash": {
+          "name": "GLM 5.3 Flash"
+        },
+        "deepseek-ai/DeepSeek-V4-Flash-0731": {
+          "name": "DeepSeek V4 Flash 0731"
+        },
+        "MiniMaxAI/MiniMax-M2.7": {
+          "name": "MiniMax M2.7"
+        }
+      }
+    }
+  }
+}

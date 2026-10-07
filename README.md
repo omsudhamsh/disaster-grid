@@ -4,18 +4,20 @@
 
 ## Overview
 
-Disaster Grid is a B.Tech major project deliverable — a real-time multimodal fusion platform for disaster response coordination. It ingests heterogeneous crisis signals (satellite/drone imagery, noisy social media and SMS reports in mixed languages, and environmental sensor streams), extracts structured intelligence from each, and produces a ranked operational heat map with natural-language explanations for every grid cell.
+Disaster Grid is a real-time multimodal fusion platform for disaster response coordination. It ingests heterogeneous crisis signals (satellite/drone imagery, noisy social media reports in mixed languages, and environmental sensor streams), extracts structured intelligence from each, and produces a ranked operational heat map with natural-language explanations for every grid cell.
 
-The platform currently covers the five South Indian states: **Telangana, Andhra Pradesh, Tamil Nadu, Karnataka, and Kerala**, and is designed to scale pan-India.
+The platform currently provides **PAN India coverage** — all 28 states and union territories, with the operational map restricted to Indian boundaries (neighbouring countries are masked out) and ready for future pan-India scaling.
 
 ## Key Features
 
-- **Geographic Coverage** — Incident, message, and sensor datasets distributed across South India; interactive Leaflet crisis map with automatic viewport fitting to the marker spread.
+- **PAN India Coverage & Boundary Enforcement** — 65 incidents, 61 code-mixed crisis reports and 52 sensor nodes spanning all 28 states and union territories. The map constrains panning to India and renders a restriction mask (Natural Earth 50m national boundary, Douglas-Peucker simplified) that dims neighbouring countries. A point-in-polygon test with a calibrated 12 km coastal tolerance plus explicit offshore union-territory boxes guarantees no non-Indian point can ever reach the map.
+- **Dual Map Views** — a toggle switches between the **Heat Map** (intensity-blurred crisis hotspots) and the **Hexbin Heatmap** (clickable hexagonal density bins with zoom-adaptive sizing for precise location tracing). Both share the same severity legend and can be switched at any time.
+- **Geographic Coverage** — Interactive Leaflet crisis map with automatic viewport fitting to the marker spread.
 - **Clerk Authentication** — Protected routes with a full login-state gate; restricted actions (reporting incidents, uploading imagery, confirming deployments) require an authenticated responder session.
 - **Imagery Analysis (Gemini Vision + Supabase)** — Drag-and-drop satellite/drone imagery upload; Gemini classifies disaster type, estimates damage severity (0–100%), affected structures, and normalized bounding-box metadata; results persist to the Supabase `disaster-images` bucket and `imagery_analysis` table.
-- **Live Sensor Network** — Deployed IoT nodes (river gauges, rainfall nodes, landslide radars) unified with live USGS earthquake feed (M2.5+ within 1200 km) and Open-Meteo weather metrics (precipitation, rain, wind), with a computed 0–100 live risk level and 60-second auto-refresh.
-- **Crisis Intelligence (NLP)** — Code-mixed text understanding for Telugu/Tamil/Malayalam/Hinglish/English reports: location extraction, disaster tagging, urgency levels 1–5, affected-population counts, and required-aid detection. Filterable by urgency level, disaster tag, and region.
-- **Multimodal Fusion & XAI** — Every grid cell scored as `Priority = 0.40 × Vision Damage + 0.35 × NLP Urgency + 0.25 × Live Sensor Risk`, ranked into an operational heat map with natural-language rationale per cell.
+- **Live Sensor Network** — Deployed IoT nodes (river gauges, rainfall nodes, landslide radars) unified with live USGS earthquake feed (M2.5+ within 3200 km of central India) and Open-Meteo weather metrics (precipitation, rain, wind), with a computed 0–100 live risk level and 60-second auto-refresh.
+- **Crisis Intelligence (NLP)** — Code-mixed text understanding for Hindi/English, Telugu, Tamil, Malayalam, Bengali, Assamese and Punjabi reports: location extraction, disaster tagging, urgency levels 1–5, affected-population counts, and required-aid detection. Filterable by urgency level, disaster tag, and region.
+- **Multimodal Fusion & XAI** — Every grid cell scored as `Priority = 0.40 × Vision Damage + 0.35 × NLP Urgency + 0.25 × Live Sensor Risk`, ranked into an operational heat map with natural-language explanations per cell.
 - **Command Center, Live Incidents & Resources** — Aggregated operational metrics, real-time incident reporting (persisted to the backend), and dynamic allocation of rescue boats, medical teams, survey drones, and NDRF squads per location.
 
 ## Architecture
@@ -69,10 +71,12 @@ The platform currently covers the five South Indian states: **Telangana, Andhra 
 disaster-grid/
 ├── backend/
 │   ├── main.py                  # FastAPI app, CORS, router registration
+│   ├── tools/
+│   │   └── build_india_outline.py  # regenerates the simplified India boundary
 │   ├── data/
-│   │   ├── incidents.json       # 18 incidents, 5 states, with coordinates
-│   │   ├── messages.json        # 15 code-mixed crisis reports
-│   │   └── sensors.json         # 11 deployed sensor nodes
+│   │   ├── incidents.json       # 65 incidents, PAN India, with coordinates
+│   │   ├── messages.json        # 61 code-mixed crisis reports
+│   │   └── sensors.json         # 52 deployed sensor nodes
 │   ├── routes/
 │   │   ├── incidents.py         # GET list/detail + POST report
 │   │   ├── crisis.py            # filtered message feed + POST analyze
@@ -81,7 +85,7 @@ disaster-grid/
 │   │   ├── imagery.py           # image upload → Gemini analysis
 │   │   └── resources.py         # inventory + dynamic allocation
 │   └── services/
-│       ├── nlp.py               # code-mixed NLP engine
+│       ├── nlp.py               # PAN India code-mixed NLP engine
 │       ├── vision.py            # Gemini Vision + Supabase
 │       ├── sensors.py           # USGS + Open-Meteo integration
 │       ├── fusion.py            # priority fusion (0.40/0.35/0.25)
@@ -93,8 +97,12 @@ disaster-grid/
         ├── services/
         │   ├── api.js           # shared API client
         │   └── incidentServices.js
+        ├── utils/
+        │   ├── geo.js           # India boundary + containment test
+        │   ├── indiaOutline.js  # generated boundary rings
+        │   └── hexbin.js        # hexagonal binning geometry
         ├── components/
-        │   ├── DisasterMap.jsx  # Leaflet map + auto-fit bounds
+        │   ├── DisasterMap.jsx  # dual view: heat map + hexbin
         │   ├── Header.jsx       # auth-aware header
         │   └── Sidebar.jsx      # navigation + session chip
         └── pages/
@@ -105,6 +113,24 @@ disaster-grid/
             ├── Sensors.jsx      # live feeds + node cards
             ├── Fusion.jsx       # ranked heat map + XAI drawer
             └── Resources.jsx    # dynamic unit allocation
+```
+
+## Map Views
+
+| View | Description |
+|---|---|
+| **Heat Map** | Intensity-blurred crisis hotspots, grouped into severity bands. Existing behaviour, unchanged. |
+| **Hexbin Heatmap** | Hexagonal density bins sized in screen pixels, so they stay small and evenly spread at every zoom. Each bin aggregates the incidents falling inside it, is coloured by peak severity and is clickable for a full breakdown (caseload, people affected, peak/mean priority, centroid, incident list). |
+
+Both views share the crisis-intensity legend and switch instantly without reloading data. Bins re-aggregate on zoom and pan so the trace density always matches the current viewport.
+
+### Verification
+
+```bash
+cd frontend
+npm run test:map     # hexbin geometry + India boundary containment
+npm run lint
+npm run build
 ```
 
 ## Setup
@@ -147,7 +173,7 @@ npm run dev                        # http://localhost:5173
 | Variable | Description |
 |---|---|
 | `GEMINI_API_KEY` | Google GenAI API key |
-| `GEMINI_MODEL` | Vision model (default `gemini-2.0-flash`) |
+| `GEMINI_MODEL` | Vision model (default `gemini-3.6-flash`) |
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_KEY` | Supabase publishable/service key |
 | `SUPABASE_BUCKET` | Storage bucket (`disaster-images`) |
@@ -198,18 +224,20 @@ The XAI layer emits a natural-language rationale per cell, for example:
 
 **Completed**
 
-- South India dataset expansion (incidents, code-mixed messages, sensor nodes)
+- PAN India data expansion (65 incidents, 61 code-mixed messages, 52 sensor nodes across all states and UTs)
+- Dual map views: Heat Map + clickable Hexbin Heatmap with zoom-adaptive binning
+- India boundary enforcement (restriction mask + point-in-polygon containment with calibrated coastal tolerance)
 - Clerk authentication with protected routes and gated actions
 - Gemini Vision imagery analysis with Supabase persistence
 - Live USGS + Open-Meteo sensor integration with composite risk level
-- Code-mixed NLP engine (locations, disaster tags, urgency 1–5, aid)
+- PAN India code-mixed NLP engine (locations, disaster tags, urgency 1–5, aid)
 - Weighted multimodal fusion with ranked heat map and XAI drawer
 - Live incident reporting, command-center metrics, and resource allocation
-- Dark tactical UI across all seven pages; lint-clean and production build verified
+- Dark tactical UI across all seven pages; lint-clean, production build verified, map geometry/boundary test suite green
 
 **Roadmap (upcoming additions)**
 
-- Pan-India scaling and district-level grid subdivision
+- District-level grid subdivision and per-district drill-down
 - WebSocket live updates for incident and sensor streams
 - Historical trend analytics and forecasting overlays
 - Multi-language report intake expansion and OCR for field photos

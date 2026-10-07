@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+import PageShell from "../components/PageShell";
 import {
   Activity,
   Thermometer,
@@ -15,9 +14,13 @@ import {
   Globe2,
   RefreshCw,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { apiGet } from "../services/api";
 
 const REFRESH_INTERVAL_MS = 60000;
+
+const FEED_TONE = { live: "safe", degraded: "crit" };
 
 function weatherCodeLabel(code) {
   const map = {
@@ -138,58 +141,38 @@ function Sensors() {
   const feedStatus = snapshot?.status || "unknown";
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex">
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header />
-
-        <main className="flex-1 p-6 overflow-auto">
+    <PageShell >
           {/* Heading */}
-          <div className="mb-6 flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="rounded-md bg-[#0b1424] border border-[#1e293b] p-3 text-slate-200">
-                <Radio size={20} />
-              </div>
-
-              <div>
-                <h1 className="text-xl font-semibold text-slate-100 tracking-wide">
-                  SENSOR NETWORK
-                </h1>
-
-                <p className="text-xs text-slate-500 mt-0.5">
-                  USGS seismic + Open-Meteo weather + deployed IoT nodes
-                </p>
-              </div>
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div className="min-w-0">
+              <p className="eyebrow">Telemetry</p>
+              <h1 className="mt-1 text-lg font-semibold tracking-tight text-[var(--color-ops-text)]">
+                Sensor Network
+              </h1>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[var(--color-ops-muted)]">
+                Seismic + weather + deployed IoT nodes · PAN India
+              </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-2 text-xs text-slate-400">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    feedStatus === "live"
-                      ? "bg-emerald-500"
-                      : feedStatus === "degraded"
-                        ? "bg-rose-500"
-                        : "bg-amber-500"
-                  }`}
-                />
-                {feedStatus.toUpperCase()}
-              </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone={FEED_TONE[feedStatus] || "muted"}>{feedStatus.toUpperCase()}</Badge>
 
-              <button
+              <Button
                 type="button"
+                variant="neutral"
+                size="sm"
                 onClick={() => load(true)}
-                className="flex items-center gap-2 rounded-md border border-[#1e293b] bg-[#0b1424] px-3 py-2 text-[10px] font-bold text-slate-300 transition hover:bg-[#131f38]"
+                aria-busy={loading}
+                disabled={loading}
               >
-                <RefreshCw size={12} />
-                REFRESH
-              </button>
+                <RefreshCw size={12} aria-hidden="true" />
+                Refresh
+              </Button>
             </div>
           </div>
 
           {/* Summary */}
-          <div className="mb-4 grid grid-cols-4 gap-4">
+          <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
             <SensorStat
               icon={Radio}
               title="TOTAL SENSORS"
@@ -225,14 +208,14 @@ function Sensors() {
           {/* Live external feeds */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             {/* Weather feed */}
-            <section className="rounded-md border border-[#1e293b] bg-[#0f172a] overflow-hidden">
-              <div className="px-4 py-3 border-b border-[#1e293b] flex items-center justify-between">
+            <section className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] overflow-hidden">
+              <div className="px-4 py-3 border-b border-[var(--color-ops-line)] flex items-center justify-between">
                 <div>
-                  <h2 className="text-xs font-bold tracking-wider text-slate-200">
-                    OPEN-METEO · LIVE WEATHER
+                  <h2 className="text-xs font-bold tracking-wider text-[var(--color-ops-text)]">
+                      LIVE WEATHER
                   </h2>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Chennai reference cell · 13.0827N, 80.2707E
+                  <p className="text-[11px] text-[var(--color-ops-muted)] mt-0.5">
+                    Central India reference cell · 22.5937N, 78.9629E
                   </p>
                 </div>
 
@@ -247,27 +230,27 @@ function Sensors() {
                   <>
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-[10px] font-bold tracking-wider text-slate-500">
+                        <p className="text-[10px] font-bold tracking-wider text-[var(--color-ops-muted)]">
                           CONDITIONS
                         </p>
-                        <p className="mt-1 text-sm font-semibold text-slate-100">
+                        <p className="mt-1 text-sm font-semibold text-[var(--color-ops-text)]">
                           {weatherCodeLabel(weather.weather_code)}
                         </p>
                       </div>
 
                       <div className="text-right">
-                        <p className="font-mono text-3xl font-bold text-slate-100">
+                        <p className="font-mono text-3xl font-bold text-[var(--color-ops-text)]">
                           {weather.temperature_2m != null
                             ? `${weather.temperature_2m.toFixed(1)}°`
                             : "--"}
                         </p>
-                        <p className="text-[10px] font-mono text-slate-500">
+                        <p className="text-[10px] font-mono text-[var(--color-ops-muted)]">
                           TEMPERATURE
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-4 gap-3">
+                    <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
                       <LiveMetric
                         icon={Droplets}
                         label="PRECIPITATION"
@@ -290,14 +273,14 @@ function Sensors() {
                       />
                     </div>
 
-                    <p className="mt-3 text-[10px] font-mono text-slate-600">
+                    <p className="mt-3 text-[10px] font-mono text-[var(--color-ops-muted)]">
                       UPDATED {timeAgo(snapshot?.updated_at * 1000)}
                       {" · "}
                       CACHE TTL {snapshot?.cache_ttl_seconds}s
                     </p>
                   </>
                 ) : (
-                  <div className="py-10 text-center text-xs text-slate-500">
+                  <div className="py-10 text-center text-xs text-[var(--color-ops-muted)]">
                     Weather feed unavailable.
                   </div>
                 )}
@@ -305,14 +288,14 @@ function Sensors() {
             </section>
 
             {/* Seismic feed */}
-            <section className="rounded-md border border-[#1e293b] bg-[#0f172a] overflow-hidden">
-              <div className="px-4 py-3 border-b border-[#1e293b] flex items-center justify-between">
+            <section className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] overflow-hidden">
+              <div className="px-4 py-3 border-b border-[var(--color-ops-line)] flex items-center justify-between">
                 <div>
-                  <h2 className="text-xs font-bold tracking-wider text-slate-200">
-                    USGS · SEISMIC ACTIVITY
+                  <h2 className="text-xs font-bold tracking-wider text-[var(--color-ops-text)]">
+                      SEISMIC ACTIVITY
                   </h2>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    M2.5+ events within 1200km of reference cell
+                  <p className="text-[11px] text-[var(--color-ops-muted)] mt-0.5">
+                    M2.5+ events within 3200km of reference cell
                   </p>
                 </div>
 
@@ -324,13 +307,13 @@ function Sensors() {
 
               <div className="p-3 space-y-2 max-h-[280px] overflow-auto">
                 {loading ? (
-                  <div className="py-10 text-center text-xs text-slate-500">
+                  <div className="py-10 text-center text-xs text-[var(--color-ops-muted)]">
                     Loading seismic feed...
                   </div>
                 ) : earthquakes.length === 0 ? (
                   <div className="py-10 text-center">
-                    <Globe2 size={26} className="mx-auto text-slate-700" />
-                    <p className="mt-3 text-xs text-slate-400">
+                    <Globe2 size={26} className="mx-auto text-[var(--color-ops-muted)]" />
+                    <p className="mt-3 text-xs text-[var(--color-ops-secondary)]">
                       No M2.5+ seismic events detected in the region.
                     </p>
                   </div>
@@ -338,13 +321,13 @@ function Sensors() {
                   earthquakes.map((event) => (
                     <div
                       key={event.id || event.name}
-                      className="flex items-center justify-between rounded-md border border-[#1e293b] bg-[#0b1424] px-3 py-2.5"
+                      className="flex items-center justify-between rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-raised)] px-3 py-2.5"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-slate-200 truncate">
+                        <p className="text-xs font-semibold text-[var(--color-ops-text)] truncate">
                           {event.name}
                         </p>
-                        <p className="text-[10px] font-mono text-slate-500 mt-0.5">
+                        <p className="text-[10px] font-mono text-[var(--color-ops-muted)] mt-0.5">
                           {event.latitude?.toFixed(2)}N,{" "}
                           {event.longitude?.toFixed(2)}E
                           {event.depth_km != null && ` · ${event.depth_km.toFixed(1)}km deep`}
@@ -358,12 +341,12 @@ function Sensors() {
                               ? "text-rose-400"
                               : event.magnitude >= 4
                                 ? "text-amber-400"
-                                : "text-slate-200"
+                                : "text-[var(--color-ops-text)]"
                           }`}
                         >
                           M{event.magnitude?.toFixed(1)}
                         </p>
-                        <p className="text-[10px] font-mono text-slate-600">
+                        <p className="text-[10px] font-mono text-[var(--color-ops-muted)]">
                           {timeAgo(event.time)}
                         </p>
                       </div>
@@ -375,18 +358,18 @@ function Sensors() {
           </div>
 
           {/* Deployed sensor nodes */}
-          <section className="rounded-md border border-[#1e293b] bg-[#0f172a] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[#1e293b] flex items-center justify-between">
+          <section className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] overflow-hidden">
+            <div className="px-4 py-3 border-b border-[var(--color-ops-line)] flex items-center justify-between">
               <div>
-                <h2 className="text-xs font-bold tracking-wider text-slate-200">
-                  DEPLOYED SENSOR NODES · SOUTH INDIA
+                <h2 className="text-xs font-bold tracking-wider text-[var(--color-ops-text)]">
+                  DEPLOYED SENSOR NODES · PAN INDIA
                 </h2>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-[var(--color-ops-muted)] mt-0.5">
                   River gauges, rainfall nodes and landslide radars
                 </p>
               </div>
 
-              <span className="text-[10px] font-mono text-slate-600">
+              <span className="text-[10px] font-mono text-[var(--color-ops-muted)]">
                 {sensors.length} NODES
               </span>
             </div>
@@ -399,12 +382,10 @@ function Sensors() {
           </section>
 
           {/* Auto-refresh note */}
-          <p className="mt-3 text-center text-[10px] font-mono text-slate-600">
-            AUTO-REFRESH EVERY 60S · LIVE FEEDS: USGS FDSNWS + OPEN-METEO
+          <p className="mt-3 text-center text-[10px] font-mono text-[var(--color-ops-muted)]">
+              AUTO-REFRESH EVERY 60S · LIVE FEEDS: SEISMIC + WEATHER
           </p>
-        </main>
-      </div>
-    </div>
+    </PageShell>
   );
 }
 
@@ -416,20 +397,20 @@ function SensorStat({ icon: Icon, title, value, suffix, tone }) {
         ? "text-amber-400"
         : tone === "emerald"
           ? "text-emerald-400"
-          : "text-slate-100";
+          : "text-[var(--color-ops-text)]";
 
   return (
-    <div className="rounded-md border border-[#1e293b] bg-[#0f172a] p-4">
+    <div className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold tracking-wider text-slate-500">
+        <p className="text-[10px] font-bold tracking-wider text-[var(--color-ops-muted)]">
           {title}
         </p>
-        <Icon size={14} className="text-slate-500" />
+        <Icon size={14} className="text-[var(--color-ops-muted)]" />
       </div>
 
-      <p className={`font-mono text-3xl font-semibold mt-2 ${valueColor}`}>
+<p className={`font-mono text-3xl font-semibold mt-2 ${valueColor}`}>
         {value}
-        {suffix && <span className="text-sm text-slate-500">{suffix}</span>}
+        {suffix && <span className="text-sm text-[var(--color-ops-muted)]">{suffix}</span>}
       </p>
     </div>
   );
@@ -437,13 +418,13 @@ function SensorStat({ icon: Icon, title, value, suffix, tone }) {
 
 function LiveMetric({ icon: Icon, label, value }) {
   return (
-    <div className="rounded-md border border-[#1e293b] bg-[#0b1424] p-3">
-      <div className="flex items-center gap-1.5 text-slate-500">
+    <div className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-raised)] p-3">
+      <div className="flex items-center gap-1.5 text-[var(--color-ops-muted)]">
         <Icon size={13} />
         <span className="text-[9px] font-bold tracking-wider">{label}</span>
       </div>
 
-      <p className="mt-1.5 font-mono text-sm font-bold text-slate-100">
+      <p className="mt-1.5 font-mono text-sm font-bold text-[var(--color-ops-text)]">
         {value}
       </p>
     </div>
@@ -458,21 +439,21 @@ function SensorCard({ sensor }) {
     <div
       className={`rounded-md border p-4 ${
         isAlert
-          ? "border-amber-500/30 bg-[#0b1424]"
-          : "border-[#1e293b] bg-[#0b1424]"
+          ? "border-amber-500/30 bg-[var(--color-ops-raised)]"
+          : "border-[var(--color-ops-line)] bg-[var(--color-ops-raised)]"
       }`}
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="rounded border border-[#1e293b] bg-[#0f172a] p-2 text-slate-300">
+          <div className="rounded border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] p-2 text-[var(--color-ops-secondary)]">
             <Waves size={16} />
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-slate-100">
+            <h3 className="text-xs font-bold text-[var(--color-ops-text)]">
               {sensor.name}
             </h3>
-            <p className="text-[10px] font-mono text-slate-500 mt-0.5">
+            <p className="text-[10px] font-mono text-[var(--color-ops-muted)] mt-0.5">
               {sensor.location}
             </p>
           </div>
@@ -506,7 +487,7 @@ function SensorCard({ sensor }) {
         />
       </div>
 
-      <div className="mt-3 h-1.5 overflow-hidden rounded-sm bg-[#0f172a]">
+      <div className="mt-3 h-1.5 overflow-hidden rounded-sm bg-[var(--color-ops-panel)]">
         <div
           className={`h-full rounded-sm ${
             sensor.alert_level >= 70
@@ -535,11 +516,11 @@ function NodeMetric({ icon: Icon, label, value, tone }) {
       ? "text-rose-400"
       : tone === "amber"
         ? "text-amber-400"
-        : "text-slate-100";
+        : "text-[var(--color-ops-text)]";
 
   return (
-    <div className="rounded border border-[#1e293b] bg-[#0f172a] p-2.5">
-      <div className="flex items-center gap-1.5 text-slate-500">
+    <div className="rounded border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] p-2.5">
+      <div className="flex items-center gap-1.5 text-[var(--color-ops-muted)]">
         <Icon size={11} />
         <span className="text-[9px] font-bold tracking-wider">{label}</span>
       </div>

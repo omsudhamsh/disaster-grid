@@ -18,4 +18,11 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // Config files and scripts run in Node, not the browser.
+    files: ['*.config.js', 'verify-hexbin.mjs'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
 ])

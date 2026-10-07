@@ -1,0 +1,225 @@
+[
+  {
+    "id": "DSP-003",
+    "created_at": "2026-10-07T06:09:01Z",
+    "status": "dispatched",
+    "latitude": 30.1171,
+    "longitude": 79.6148,
+    "location_label": "34 km NNW of Bāgeshwar",
+    "disaster_type": "Earthquake",
+    "urgency": "High",
+    "priority": 80,
+    "people": 0,
+    "needs": [
+      "Rescue"
+    ],
+    "notes": "",
+    "reporter": "Signed-in responder",
+    "incident_id": "USGS-us6000u0hz",
+    "assigned_units": [
+      {
+        "unit_id": "UNIT-02",
+        "unit": "Delhi NCR Quick Response",
+        "base": "New Delhi, Delhi",
+        "capability": "Medical Teams",
+        "distance_km": 286.9,
+        "eta_minutes": 392,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-08",
+        "unit": "Lucknow Relief Group",
+        "base": "Lucknow, Uttar Pradesh",
+        "capability": "Relief Camps",
+        "distance_km": 386.2,
+        "eta_minutes": 524,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-11",
+        "unit": "Ahmedabad Field Hospital",
+        "base": "Ahmedabad, Gujarat",
+        "capability": "Medical Teams",
+        "distance_km": 1054.4,
+        "eta_minutes": 1415,
+        "matched_capability": true
+      }
+    ]
+  },
+  {
+    "id": "DSP-002",
+    "created_at": "2026-10-06T12:16:14Z",
+    "status": "dispatched",
+    "latitude": 17.385,
+    "longitude": 78.4867,
+    "location_label": "Recorded GPS position",
+    "disaster_type": "General Emergency",
+    "urgency": "High",
+    "priority": 80,
+    "people": 0,
+    "needs": [
+      "Rescue"
+    ],
+    "notes": "Water entering ground floor, 4 elderly residents need boat rescue near the old city.",
+    "reporter": "Signed-in responder",
+    "incident_id": null,
+    "assigned_units": [
+      {
+        "unit_id": "UNIT-09",
+        "unit": "Hyderabad Response Wing",
+        "base": "Hyderabad, Telangana",
+        "capability": "Rescue + Medical",
+        "distance_km": 0.0,
+        "eta_minutes": 10,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-04",
+        "unit": "Vijayawada NDRF Battalion",
+        "base": "Vijayawada, Andhra Pradesh",
+        "capability": "NDRF Squad",
+        "distance_km": 249.8,
+        "eta_minutes": 343,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-03",
+        "unit": "Bengaluru Drone Recon Wing",
+        "base": "Bengaluru, Karnataka",
+        "capability": "Survey Drones",
+        "distance_km": 500.0,
+        "eta_minutes": 676,
+        "matched_capability": true
+      }
+    ]
+  },
+  {
+    "id": "DSP-001",
+    "created_at": "2026-10-06T09:46:07Z",
+    "status": "dispatched",
+    "latitude": 17.385,
+    "longitude": 78.4867,
+    "location_label": "Charminar, Hyderabad, Telangana",
+    "disaster_type": "Flood",
+    "urgency": "Critical",
+    "priority": 92,
+    "people": 12,
+    "needs": [
+      "Rescue",
+      "Medical"
+    ],
+    "notes": "Water rising fast near old city, 12 residents trapped on rooftop",
+    "reporter": "omsudhamsh (responder)",
+    "incident_id": null,
+    "assigned_units": [
+      {
+        "unit_id": "UNIT-09",
+        "unit": "Hyderabad Response Wing",
+        "base": "Hyderabad, Telangana",
+        "capability": "Rescue + Medical",
+        "distance_km": 0.0,
+        "eta_minutes": 10,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-04",
+        "unit": "Vijayawada NDRF Battalion",
+        "base": "Vijayawada, Andhra Pradesh",
+        "capability": "NDRF Squad",
+        "distance_km": 249.8,
+        "eta_minutes": 343,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-03",
+        "unit": "Bengaluru Drone Recon Wing",
+        "base": "Bengaluru, Karnataka",
+        "capability": "Survey Drones",
+        "distance_km": 500.0,
+        "eta_minutes": 676,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-01",
+        "unit": "Chennai Rescue Column",
+        "base": "Chennai, Tamil Nadu",
+        "capability": "Rescue Boats + Medical",
+        "distance_km": 515.2,
+        "eta_minutes": 696,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-10",
+        "unit": "Mumbai Coast Guard Cell",
+        "base": "Mumbai, Maharashtra",
+        "capability": "Rescue Boats",
+        "distance_km": 621.5,
+        "eta_minutes": 838,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-12",
+        "unit": "Bhubaneswar Cyclone Cell",
+        "base": "Bhubaneswar, Odisha",
+        "capability": "NDRF Squad + Relief",
+        "distance_km": 837.2,
+        "eta_minutes": 1126,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-05",
+        "unit": "Kochi Relief Task Force",
+        "base": "Kochi, Kerala",
+        "capability": "Relief Camps",
+        "distance_km": 862.8,
+        "eta_minutes": 1160,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-11",
+        "unit": "Ahmedabad Field Hospital",
+        "base": "Ahmedabad, Gujarat",
+        "capability": "Medical Teams",
+        "distance_km": 879.5,
+        "eta_minutes": 1182,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-08",
+        "unit": "Lucknow Relief Group",
+        "base": "Lucknow, Uttar Pradesh",
+        "capability": "Relief Camps",
+        "distance_km": 1082.1,
+        "eta_minutes": 1452,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-07",
+        "unit": "Kolkata Medical Column",
+        "base": "Kolkata, West Bengal",
+        "capability": "Medical Teams",
+        "distance_km": 1181.9,
+        "eta_minutes": 1585,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-02",
+        "unit": "Delhi NCR Quick Response",
+        "base": "New Delhi, Delhi",
+        "capability": "Medical Teams",
+        "distance_km": 1255.4,
+        "eta_minutes": 1683,
+        "matched_capability": true
+      },
+      {
+        "unit_id": "UNIT-06",
+        "unit": "Guwahati Water Relief Unit",
+        "base": "Guwahati, Assam",
+        "capability": "Water Supply Units",
+        "distance_km": 1677.6,
+        "eta_minutes": 2246,
+        "matched_capability": true
+      }
+    ]
+  }
+]

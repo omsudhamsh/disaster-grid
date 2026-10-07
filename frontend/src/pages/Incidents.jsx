@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAuth, SignInButton } from "@clerk/react";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+import PageShell from "../components/PageShell";
+import { Button } from "@/components/ui/button";
 import {
   AlertTriangle,
   MapPin,
@@ -11,11 +10,12 @@ import {
   Filter,
   Plus,
   X,
-  Lock,
   ChevronDown,
+  Siren,
 } from "lucide-react";
 import { reportIncident } from "../services/incidentServices";
 import { apiGet } from "../services/api";
+import DispatchModal from "../components/DispatchModal";
 
 const EMPTY_FORM = {
   location: "",
@@ -44,10 +44,9 @@ const DISASTER_TYPES = [
 const URGENCY_LEVELS = ["Critical", "High", "Moderate", "Low"];
 
 const inputClass =
-  "h-10 w-full rounded-md border border-[#1e293b] bg-[#0b1424] px-3 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-slate-500 focus:ring-1 focus:ring-slate-600";
+  "h-10 w-full rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-raised)] px-3 text-sm text-[var(--color-ops-text)] outline-none placeholder:text-[var(--color-ops-muted)] focus:border-[var(--color-ops-line-strong)] focus:ring-1 focus:ring-[var(--color-ops-accent)]";
 
 function Incidents() {
-  const { isSignedIn } = useAuth();
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -59,33 +58,31 @@ function Incidents() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [dispatchTarget, setDispatchTarget] = useState(null);
 
   useEffect(() => {
     let active = true;
 
-    (async () => {
-      try {
-        const data = await apiGet("/api/incidents/");
+    const load = () => {
+      apiGet("/api/incidents/")
+        .then((data) => {
+          if (!active) return;
+          setIncidents(data.incidents || []);
+          setError("");
+        })
+        .catch(() => {
+          if (active) setError("Unable to connect to Disaster Grid backend.");
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    };
 
-        if (!active) {
-          return;
-        }
-
-        setIncidents(data.incidents);
-      } catch (err) {
-        console.error(err);
-        if (active) {
-          setError("Unable to connect to Disaster Grid backend.");
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    })();
-
+    load();
+    const timer = setInterval(load, 60000);
     return () => {
       active = false;
+      clearInterval(timer);
     };
   }, []);
 
@@ -158,53 +155,36 @@ function Incidents() {
   const locationsCount = new Set(incidents.map((i) => i.location)).size;
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex">
-      <Sidebar />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header />
-
-        <main className="flex-1 p-6 overflow-auto">
+    <PageShell >
           {/* Page heading */}
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h1 className="text-xl font-semibold text-slate-100 tracking-wide">
+              <h1 className="text-xl font-semibold text-[var(--color-ops-text)] tracking-wide">
                 LIVE INCIDENTS
               </h1>
 
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[var(--color-ops-muted)] mt-1">
                 Monitor and prioritize incoming disaster reports.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 text-xs text-[var(--color-ops-secondary)]">
+                <span className="live-dot live-dot--live" aria-hidden="true" />
                 {loading ? "SYNCING" : `${incidents.length} ACTIVE`}
               </div>
 
-              {isSignedIn ? (
-                <button
-                  type="button"
-                  onClick={() => setShowReportDrawer(true)}
-                  className="flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-900 transition hover:bg-white"
-                >
-                  <Plus size={14} />
-                  REPORT INCIDENT
-                </button>
-              ) : (
-                <SignInButton mode="modal">
-                  <button className="flex items-center gap-2 rounded-md border border-[#1e293b] bg-[#0b1424] px-4 py-2.5 text-xs font-bold text-slate-300 transition hover:bg-[#131f38]">
-                    <Lock size={13} />
-                    SIGN IN TO REPORT
-                  </button>
-                </SignInButton>
-              )}
+              {/* The whole console sits behind the auth gate, so this is
+                  the single report entry point — no sign-in duplicate. */}
+              <Button type="button" variant="default" onClick={() => setShowReportDrawer(true)}>
+                <Plus size={14} aria-hidden="true" />
+                Report incident
+              </Button>
             </div>
           </div>
 
           {/* Summary strip */}
-          <div className="grid grid-cols-4 gap-4 mb-4">
+          <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
             <MiniStat
               icon={AlertTriangle}
               title="CRITICAL"
@@ -228,12 +208,12 @@ function Incidents() {
           </div>
 
           {/* Search / filter bar */}
-          <div className="rounded-md border border-[#1e293b] bg-[#0f172a] p-4 mb-4">
+          <div className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] p-4 mb-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative flex-1 min-w-[240px]">
                 <Search
                   size={15}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-ops-muted)]"
                 />
 
                 <input
@@ -241,18 +221,18 @@ function Incidents() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search ID, location, type, source..."
-                  className="h-9 w-full rounded-md border border-[#1e293b] bg-[#0b1424] pl-9 pr-3 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-slate-500"
+                  className="h-9 w-full rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-raised)] pl-9 pr-3 text-sm text-[var(--color-ops-text)] outline-none placeholder:text-[var(--color-ops-muted)] focus:border-[var(--color-ops-line-strong)]"
                 />
               </div>
 
-              <div className="flex items-center gap-2 text-slate-500">
+              <div className="flex items-center gap-2 text-[var(--color-ops-muted)]">
                 <Filter size={14} />
 
                 <div className="relative">
                   <select
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
-                    className="h-9 appearance-none rounded-md border border-[#1e293b] bg-[#0b1424] pl-3 pr-8 text-xs font-medium text-slate-300 outline-none focus:border-slate-500"
+                    className="h-9 appearance-none rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-raised)] pl-3 pr-8 text-xs font-medium text-[var(--color-ops-secondary)] outline-none focus:border-[var(--color-ops-line-strong)]"
                   >
                     <option value="All">All types</option>
                     {DISASTER_TYPES.map((type) => (
@@ -263,7 +243,7 @@ function Incidents() {
                   </select>
                   <ChevronDown
                     size={13}
-                    className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-600"
+                    className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-ops-muted)]"
                   />
                 </div>
 
@@ -271,7 +251,7 @@ function Incidents() {
                   <select
                     value={urgencyFilter}
                     onChange={(e) => setUrgencyFilter(e.target.value)}
-                    className="h-9 appearance-none rounded-md border border-[#1e293b] bg-[#0b1424] pl-3 pr-8 text-xs font-medium text-slate-300 outline-none focus:border-slate-500"
+                    className="h-9 appearance-none rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-raised)] pl-3 pr-8 text-xs font-medium text-[var(--color-ops-secondary)] outline-none focus:border-[var(--color-ops-line-strong)]"
                   >
                     <option value="All">All urgency</option>
                     {URGENCY_LEVELS.map((level) => (
@@ -282,12 +262,12 @@ function Incidents() {
                   </select>
                   <ChevronDown
                     size={13}
-                    className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-600"
+                    className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-ops-muted)]"
                   />
                 </div>
               </div>
 
-              <p className="ml-auto text-[10px] font-mono text-slate-600">
+              <p className="ml-auto text-[10px] font-mono text-[var(--color-ops-muted)]">
                 {filteredIncidents.length} RECORDS · SORTED BY PRIORITY
               </p>
             </div>
@@ -301,18 +281,18 @@ function Incidents() {
           )}
 
           {/* Incident table */}
-          <div className="rounded-md border border-[#1e293b] bg-[#0f172a] overflow-hidden">
-            <div className="px-4 py-3 border-b border-[#1e293b] flex items-center justify-between">
+          <div className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] overflow-hidden">
+            <div className="px-4 py-3 border-b border-[var(--color-ops-line)] flex items-center justify-between">
               <div>
-                <h2 className="text-xs font-bold tracking-wider text-slate-200">
+                <h2 className="text-xs font-bold tracking-wider text-[var(--color-ops-text)]">
                   ACTIVE INCIDENT REPORTS
                 </h2>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-[var(--color-ops-muted)] mt-0.5">
                   Aggregated from multimodal disaster information sources
                 </p>
               </div>
 
-              <span className="text-[10px] font-mono text-slate-600">
+              <span className="text-[10px] font-mono text-[var(--color-ops-muted)]">
                 LIVE FEED
               </span>
             </div>
@@ -320,7 +300,7 @@ function Incidents() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1e293b] bg-[#0b1424]">
+                  <tr className="border-b border-[var(--color-ops-line)] bg-[var(--color-ops-raised)]">
                     <TableHeader>Incident</TableHeader>
                     <TableHeader>Location</TableHeader>
                     <TableHeader>Type</TableHeader>
@@ -329,6 +309,7 @@ function Incidents() {
                     <TableHeader>Required Aid</TableHeader>
                     <TableHeader>Source</TableHeader>
                     <TableHeader>Updated</TableHeader>
+                    <TableHeader>Action</TableHeader>
                   </tr>
                 </thead>
 
@@ -336,11 +317,11 @@ function Incidents() {
                   {loading && (
                     <tr>
                       <td
-                        colSpan="8"
-                        className="px-4 py-14 text-center text-xs text-slate-500"
+                        colSpan="9"
+                        className="px-4 py-14 text-center text-xs text-[var(--color-ops-muted)]"
                       >
-                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-700 border-t-emerald-500" />
-                        <span className="ml-2">Loading incident intelligence...</span>
+                        <span className="inline-block h-4 w-4 spinner rounded-full border-2 border-[var(--color-ops-line)] border-t-[var(--color-ops-safe)]" />
+                        <span className="ml-2">Loading live incident intelligence...</span>
                       </td>
                     </tr>
                   )}
@@ -348,12 +329,12 @@ function Incidents() {
                   {!loading && !error && filteredIncidents.length === 0 && (
                     <tr>
                       <td
-                        colSpan="8"
-                        className="px-4 py-14 text-center text-xs text-slate-500"
+                        colSpan="9"
+                        className="px-4 py-14 text-center text-xs text-[var(--color-ops-muted)]"
                       >
                         {search || typeFilter !== "All" || urgencyFilter !== "All"
                           ? "No incidents match the active filters."
-                          : "No active incidents found."}
+                          : "No active incidents on the live grid right now."}
                       </td>
                     </tr>
                   )}
@@ -361,30 +342,39 @@ function Incidents() {
                   {!loading &&
                     !error &&
                     filteredIncidents.map((incident) => (
-                      <IncidentRow key={incident.id} incident={incident} />
+                      <IncidentRow
+                        key={incident.id}
+                        incident={incident}
+                        onDispatch={() => setDispatchTarget({
+                          latitude: Number(incident.latitude),
+                          longitude: Number(incident.longitude),
+                          locationLabel: incident.location,
+                          urgency: incident.urgency || "High",
+                          disasterType: incident.type || "General Emergency",
+                          incidentId: incident.id,
+                        })}
+                      />
                     ))}
                 </tbody>
               </table>
             </div>
           </div>
-        </main>
-      </div>
 
       {/* Report drawer */}
       {showReportDrawer && (
         <div className="fixed inset-0 z-[2000]">
           <div
-            className="absolute inset-0 bg-slate-950/70"
+            className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-ops-bg)_75%,transparent)]"
             onClick={() => setShowReportDrawer(false)}
           />
 
-          <aside className="absolute right-0 top-0 h-full w-full max-w-md bg-[#0f172a] border-l border-[#1e293b] shadow-2xl flex flex-col">
-            <div className="flex items-center justify-between border-b border-[#1e293b] px-5 py-4">
+          <aside className="absolute right-0 top-0 h-full w-full max-w-md bg-[var(--color-ops-panel)] border-l border-[var(--color-ops-line)] shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between border-b border-[var(--color-ops-line)] px-5 py-4">
               <div>
-                <h2 className="text-sm font-bold tracking-wider text-slate-100">
+                <h2 className="text-sm font-bold tracking-wider text-[var(--color-ops-text)]">
                   REPORT LIVE INCIDENT
                 </h2>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-[var(--color-ops-muted)] mt-0.5">
                   Sent to the command center and fusion engine
                 </p>
               </div>
@@ -392,7 +382,7 @@ function Incidents() {
               <button
                 type="button"
                 onClick={() => setShowReportDrawer(false)}
-                className="rounded-md p-2 text-slate-400 hover:bg-[#131f38] hover:text-slate-200 transition-colors"
+                className="rounded-md p-2 text-[var(--color-ops-secondary)] hover:bg-[var(--color-ops-overlay)] hover:text-[var(--color-ops-text)] transition-colors"
               >
                 <X size={17} />
               </button>
@@ -513,7 +503,7 @@ function Incidents() {
                 >
                   <option>Field Report</option>
                   <option>Social Media</option>
-                  <option>SMS</option>
+                  <option>Social Media</option>
                   <option>IoT Sensor</option>
                   <option>Satellite</option>
                 </select>
@@ -526,43 +516,56 @@ function Incidents() {
               )}
             </form>
 
-            <div className="flex justify-end gap-3 border-t border-[#1e293b] px-5 py-4">
-              <button
+            {/* Drawer actions wrap and stack, so they stay inside the panel on
+                narrow screens instead of overflowing its edge. */}
+            <div className="flex flex-col-reverse gap-2 border-t border-[var(--color-ops-line)] px-5 py-4 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3">
+              <Button
                 type="button"
+                variant="outline"
                 onClick={() => setShowReportDrawer(false)}
-                className="rounded-md border border-[#1e293b] bg-[#0b1424] px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-[#131f38] transition-colors"
+                block
+                className="sm:w-auto"
               >
-                CANCEL
-              </button>
+                Cancel
+              </Button>
 
-              <button
+              <Button
                 type="button"
+                variant="default"
                 onClick={handleReportSubmit}
                 disabled={submitting}
-                className="flex items-center gap-2 rounded-md bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-900 hover:bg-white transition-colors disabled:opacity-50"
+                aria-busy={submitting}
+                block
+                className="btn-wrap sm:w-auto"
               >
-                <AlertTriangle size={13} />
-                {submitting ? "SUBMITTING..." : "SUBMIT REPORT"}
-              </button>
+                <AlertTriangle size={13} aria-hidden="true" />
+                {submitting ? "Submitting…" : "Submit report"}
+              </Button>
             </div>
           </aside>
         </div>
       )}
-    </div>
+
+      <DispatchModal
+        open={Boolean(dispatchTarget)}
+        onClose={() => setDispatchTarget(null)}
+        prefill={dispatchTarget || {}}
+      />
+    </PageShell>
   );
 }
 
 function MiniStat({ icon: Icon, title, value }) {
   return (
-    <div className="rounded-md border border-[#1e293b] bg-[#0f172a] p-4">
+    <div className="rounded-md border border-[var(--color-ops-line)] bg-[var(--color-ops-panel)] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold tracking-wider text-slate-500">
+        <p className="text-[10px] font-bold tracking-wider text-[var(--color-ops-muted)]">
           {title}
         </p>
-        <Icon size={13} className="text-slate-500" />
+        <Icon size={13} className="text-[var(--color-ops-muted)]" />
       </div>
 
-      <p className="font-mono text-2xl font-semibold text-slate-100 mt-2">
+      <p className="font-mono text-2xl font-semibold text-[var(--color-ops-text)] mt-2">
         {value}
       </p>
     </div>
@@ -571,13 +574,13 @@ function MiniStat({ icon: Icon, title, value }) {
 
 function TableHeader({ children }) {
   return (
-    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500">
+    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-[var(--color-ops-muted)]">
       {children}
     </th>
   );
 }
 
-function IncidentRow({ incident }) {
+function IncidentRow({ incident, onDispatch }) {
   const priorityStyle =
     incident.priority >= 85
       ? "text-rose-400 bg-rose-500/10 border-rose-500/30"
@@ -590,25 +593,25 @@ function IncidentRow({ incident }) {
       ? "text-rose-400 bg-rose-500/10 border-rose-500/30"
       : incident.urgency === "High"
         ? "text-amber-400 bg-amber-500/10 border-amber-500/30"
-        : "text-slate-300 bg-slate-500/10 border-slate-500/30";
+        : "text-[var(--color-ops-secondary)] bg-[color-mix(in_srgb,var(--color-ops-secondary)_10%,transparent)] border-[color-mix(in_srgb,var(--color-ops-secondary)_30%,transparent)]";
 
   return (
-    <tr className="border-b border-[#1e293b] hover:bg-[#131f38] transition-colors">
+    <tr className="border-b border-[var(--color-ops-line)] hover:bg-[var(--color-ops-overlay)] transition-colors">
       <td className="px-4 py-3.5">
-        <p className="text-xs font-semibold text-slate-200 font-mono">
+        <p className="text-xs font-semibold text-[var(--color-ops-text)] font-mono">
           {incident.id}
         </p>
       </td>
 
       <td className="px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <MapPin size={13} className="text-slate-500 shrink-0" />
+          <MapPin size={13} className="text-[var(--color-ops-muted)] shrink-0" />
 
           <div>
-            <span className="text-xs text-slate-200">{incident.location}</span>
+            <span className="text-xs text-[var(--color-ops-text)]">{incident.location}</span>
 
             {incident.state && (
-              <span className="ml-2 text-[10px] font-mono text-slate-600">
+              <span className="ml-2 text-[10px] font-mono text-[var(--color-ops-muted)]">
                 {incident.state}
               </span>
             )}
@@ -617,11 +620,11 @@ function IncidentRow({ incident }) {
       </td>
 
       <td className="px-4 py-3.5">
-        <span className="text-xs text-slate-300">{incident.type}</span>
+        <span className="text-xs text-[var(--color-ops-secondary)]">{incident.type}</span>
       </td>
 
       <td className="px-4 py-3.5">
-        <span className="font-mono text-xs text-slate-200">{incident.people}</span>
+        <span className="font-mono text-xs text-[var(--color-ops-text)]">{incident.people}</span>
       </td>
 
       <td className="px-4 py-3.5">
@@ -641,15 +644,32 @@ function IncidentRow({ incident }) {
       </td>
 
       <td className="px-4 py-3.5">
-        <span className="text-xs text-slate-300">{incident.aid}</span>
+        <span className="text-xs text-[var(--color-ops-secondary)]">{incident.aid}</span>
       </td>
 
       <td className="px-4 py-3.5">
-        <span className="text-[11px] text-slate-500">{incident.source}</span>
+        <span className="text-[11px] font-medium text-[var(--color-ops-secondary)]">{incident.source}</span>
       </td>
 
       <td className="px-4 py-3.5">
-        <span className="text-[11px] font-mono text-slate-500">{incident.time}</span>
+        <span className="text-[11px] font-mono text-[var(--color-ops-muted)]">{incident.time}</span>
+      </td>
+
+      <td className="px-4 py-3.5">
+        {Number.isFinite(Number(incident.latitude)) && Number(incident.latitude) !== 0 ? (
+          <Button
+            type="button"
+            variant="sos"
+            size="sm"
+            onClick={onDispatch}
+            title="Request Rescue Dispatch for this location"
+          >
+            <Siren size={11} aria-hidden="true" />
+            Dispatch
+          </Button>
+        ) : (
+          <span className="text-[10px] font-mono text-[var(--color-ops-muted)]">NO GPS</span>
+        )}
       </td>
     </tr>
   );
@@ -658,7 +678,7 @@ function IncidentRow({ incident }) {
 function DrawerField({ label, children }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+      <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-[var(--color-ops-muted)]">
         {label}
       </span>
       {children}

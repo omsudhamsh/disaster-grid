@@ -1,5 +1,160 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+@import "tw-animate-css";
 @import "leaflet/dist/leaflet.css";
+
+/* ================================================================
+   Disaster Grid — TERRA Design System
+   Map-first, scenario-driven design language: true AMOLED dark
+   (#000000 base) and an adaptive off-white light mode. Spatial
+   glassmorphism, a single navigation accent, semantic status
+   colors, and mono typography for telemetry data.
+
+   The `--color-ops-*` layer remains the single source of truth.
+   `:root` carries the dark (AMOLED) values; `[data-theme="light"]`
+   overrides every token, so every component themes from exactly
+   the same variable set with no hardcoded colors anywhere.
+   ================================================================ */
+
+@theme {
+  /* --- Surfaces (dark / AMOLED defaults) --- */
+  --color-ops-bg: #000000;
+  --color-ops-panel: #0b0d12;
+  --color-ops-raised: #11141b;
+  --color-ops-overlay: #171b24;
+  --color-ops-line: rgba(255, 255, 255, 0.08);
+  --color-ops-line-strong: rgba(255, 255, 255, 0.17);
+
+  /* --- Text --- */
+  --color-ops-text: #f4f6fa;
+  --color-ops-secondary: #9ba4b5;
+  --color-ops-muted: #6e7787;
+
+  /* --- Interactive accent (navigation / selection) --- */
+  --color-ops-accent: #4da3ff;
+  --color-ops-accent-strong: #7abbff;
+  --color-ops-accent-dim: rgba(77, 163, 255, 0.16);
+
+  /* --- Semantic status (terrain / scenario palette) --- */
+  --color-ops-safe: #3ddc97;
+  --color-ops-warn: #ffb454;
+  --color-ops-crit: #ff5c73;
+  --color-ops-info: #5bc0ff;
+  --color-ops-moderate: #e3c341;
+  --color-ops-sos: #d33847;
+
+  /* Badge-grade text: one step lighter than the status hues so small
+     mono labels stay >= 4.5:1 on tinted chips. */
+  --color-ops-crit-text: #ffa3b1;
+  --color-ops-warn-text: #ffd39e;
+  --color-ops-safe-text: #8fe8c4;
+  --color-ops-info-text: #a8dbff;
+  --color-ops-muted-text: #b6bdc9;
+
+  /* --- Glass --- */
+  --color-ops-glass: rgba(8, 10, 14, 0.62);
+  --color-ops-glass-pop: rgba(11, 13, 18, 0.82);
+  --color-ops-highlight: rgba(255, 255, 255, 0.05);
+  --color-ops-shadow: rgba(0, 0, 0, 0.6);
+  --color-ops-shadow-lg: rgba(0, 0, 0, 0.75);
+  --color-ops-accent-contrast: #06121f;
+  --color-ops-sos-strong: #e04b5a;
+  --color-ops-dot-ring: #ffffff;
+
+  /* --- Map canvas filters --- */
+  --map-basemap-filter: brightness(0.82) saturate(0.82);
+  --map-satellite-filter: brightness(0.92) saturate(0.95);
+
+  /* --- Fonts --- */
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Corner radius scale — soft, spatial */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Motion tokens */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ================================================================
+   LIGHT THEME — adaptive off-white, never pure #FFFFFF
+   ================================================================ */
+[data-theme="light"] {
+  --color-ops-bg: #f5f5f7;
+  --color-ops-panel: #fbfbfd;
+  --color-ops-raised: #f0f1f5;
+  --color-ops-overlay: #e8eaef;
+  --color-ops-line: rgba(17, 24, 39, 0.1);
+  --color-ops-line-strong: rgba(17, 24, 39, 0.2);
+
+  --color-ops-text: #171a21;
+  --color-ops-secondary: #4e5768;
+  --color-ops-muted: #6a7284;
+
+  --color-ops-accent: #0b6bcb;
+  --color-ops-accent-strong: #0a5fb5;
+  --color-ops-accent-dim: rgba(11, 107, 203, 0.12);
+
+  --color-ops-safe: #0e7a55;
+  --color-ops-warn: #b45309;
+  --color-ops-crit: #ce2c4b;
+  --color-ops-info: #0369a1;
+  --color-ops-moderate: #a16207;
+  --color-ops-sos: #c22c3e;
+
+  --color-ops-crit-text: #b4233a;
+  --color-ops-warn-text: #92400e;
+  --color-ops-safe-text: #047857;
+  --color-ops-info-text: #075985;
+  --color-ops-muted-text: #4e5769;
+
+  --color-ops-glass: rgba(255, 255, 255, 0.66);
+  --color-ops-glass-pop: rgba(255, 255, 255, 0.84);
+  --color-ops-highlight: rgba(255, 255, 255, 0.65);
+  --color-ops-shadow: rgba(15, 23, 42, 0.14);
+  --color-ops-shadow-lg: rgba(15, 23, 42, 0.2);
+  --color-ops-accent-contrast: #ffffff;
+  --color-ops-sos-strong: #ad2436;
+  --color-ops-dot-ring: #ffffff;
+
+  /* Map canvas filters — the light basemap needs no dimming */
+  --map-basemap-filter: none;
+  --map-satellite-filter: none;
+
+  /* Motion tokens */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* shadcn/ui semantic aliases -> ops tokens */
+@theme inline {
+  --color-background: var(--color-ops-bg);
+  --color-foreground: var(--color-ops-text);
+  --color-card: var(--color-ops-panel);
+  --color-card-foreground: var(--color-ops-text);
+  --color-popover: var(--color-ops-raised);
+  --color-popover-foreground: var(--color-ops-text);
+  --color-primary: var(--color-ops-accent);
+  --color-primary-foreground: var(--color-ops-bg);
+  --color-secondary: var(--color-ops-raised);
+  --color-secondary-foreground: var(--color-ops-text);
+  --color-muted: var(--color-ops-overlay);
+  --color-muted-foreground: var(--color-ops-secondary);
+  --color-accent: var(--color-ops-overlay);
+  --color-accent-foreground: var(--color-ops-text);
+  --color-destructive: var(--color-ops-crit);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--color-ops-line);
+  --color-input: var(--color-ops-line);
+  --color-ring: var(--color-ops-accent);
+}
 
 * {
   box-sizing: border-box;
@@ -14,18 +169,32 @@ body,
   min-height: 100%;
 }
 
-body {
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+:root {
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  color-scheme: light;
+}
 
-  background: #0f172a;
-  color: #e2e8f0;
+html {
+  /* Theme swaps feel like a scene change, not a flash */
+  transition: background-color 240ms ease;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-ops-bg);
+  color: var(--color-ops-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 button,
@@ -35,26 +204,687 @@ select {
   font: inherit;
 }
 
-/* Tactical dark scrollbars */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0f172a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border: 2px solid #0f172a;
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+/* Focus visibility for keyboard operators (WCAG 2.4.7) */
+:focus-visible {
+  outline: 2px solid var(--color-ops-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 ::selection {
-  background: rgba(16, 185, 129, 0.35);
+  background: color-mix(in srgb, var(--color-ops-accent) 32%, transparent);
+}
+
+/* Slim, discreet scrollbars — hairline thumb, invisible track. The
+   page shell and every panel scroll without chunky sliders. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-ops-secondary) 30%, transparent) transparent;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-ops-secondary) 26%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-ops-secondary) 24%, transparent);
+  border: none;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-ops-secondary) 42%, transparent);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scrollbar-less scroll regions (nav rails, carousels) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================================================================
+   Shared component primitives (used across every page)
+   ================================================================ */
+
+@layer components {
+  .panel {
+    border-radius: 12px;
+    border: 1px solid var(--color-ops-line);
+    background: var(--color-ops-panel);
+    box-shadow: 0 1px 2px var(--color-ops-shadow);
+  }
+
+  .panel-raised {
+    border-radius: 10px;
+    border: 1px solid var(--color-ops-line);
+    background: var(--color-ops-raised);
+    transition:
+      border-color 200ms ease,
+      transform 200ms var(--ease-spring, ease),
+      box-shadow 200ms ease;
+  }
+  .panel-raised:hover {
+    border-color: var(--color-ops-line-strong);
+    transform: translateY(-1px);
+  }
+
+  /* Glassmorphism surfaces: Gaussian blur over whatever scrolls beneath,
+     a hairline light border and a faint top light reflection. */
+  .glass-bar {
+    background: var(--color-ops-glass);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    backdrop-filter: blur(20px) saturate(1.3);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ops-line-strong) 75%, transparent);
+    box-shadow:
+      inset 0 1px 0 var(--color-ops-highlight),
+      0 8px 24px var(--color-ops-shadow);
+  }
+
+  .glass-pop {
+    background: var(--color-ops-glass-pop);
+    -webkit-backdrop-filter: blur(22px) saturate(1.25);
+    backdrop-filter: blur(22px) saturate(1.25);
+    border: 1px solid var(--color-ops-line-strong);
+    box-shadow:
+      inset 0 1px 0 var(--color-ops-highlight),
+      0 18px 48px var(--color-ops-shadow-lg);
+  }
+
+  .glass-chip {
+    background: var(--color-ops-glass);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    border: 1px solid var(--color-ops-line);
+  }
+
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--color-ops-text);
+  }
+
+  .panel-sub {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--color-ops-muted);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ops-muted);
+  }
+
+  .data-value {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    /* Overflow guard: a control can never grow wider than its container,
+       so dialog/panel footers stay inside their boundary. */
+    max-width: 100%;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      opacity 180ms ease,
+      transform 120ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .btn svg {
+    flex: none;
+  }
+
+  /* Wrapping variant for long labels inside constrained containers. */
+  .btn-wrap {
+    min-width: 0;
+    height: auto;
+    min-height: 38px;
+    padding: 7px 14px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--color-ops-accent);
+    color: var(--color-ops-accent-contrast);
+    box-shadow:
+      inset 0 1px 0 var(--color-ops-highlight),
+      0 1px 2px var(--color-ops-shadow);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-ops-accent-strong);
+  }
+
+  .btn-sos {
+    background: var(--color-ops-sos);
+    color: #ffffff;
+    box-shadow:
+      inset 0 1px 0 var(--color-ops-highlight),
+      0 1px 2px var(--color-ops-shadow);
+  }
+  .btn-sos:hover:not(:disabled) {
+    background: var(--color-ops-sos-strong);
+  }
+
+  .btn-neutral {
+    background: var(--color-ops-raised);
+    border: 1px solid var(--color-ops-line-strong);
+    color: var(--color-ops-text);
+  }
+  .btn-neutral:hover:not(:disabled) {
+    background: var(--color-ops-overlay);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--color-ops-line);
+    color: var(--color-ops-secondary);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    color: var(--color-ops-text);
+    border-color: var(--color-ops-line-strong);
+    background: var(--color-ops-raised);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    padding: 2px 8px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .badge-crit {
+    color: var(--color-ops-crit-text);
+    background: color-mix(in srgb, var(--color-ops-crit) 12%, transparent);
+    border-color: color-mix(in srgb, var(--color-ops-crit) 35%, transparent);
+  }
+  .badge-warn {
+    color: var(--color-ops-warn-text);
+    background: color-mix(in srgb, var(--color-ops-warn) 14%, transparent);
+    border-color: color-mix(in srgb, var(--color-ops-warn) 35%, transparent);
+  }
+  .badge-safe {
+    color: var(--color-ops-safe-text);
+    background: color-mix(in srgb, var(--color-ops-safe) 12%, transparent);
+    border-color: color-mix(in srgb, var(--color-ops-safe) 35%, transparent);
+  }
+  .badge-info {
+    color: var(--color-ops-info-text);
+    background: color-mix(in srgb, var(--color-ops-info) 12%, transparent);
+    border-color: color-mix(in srgb, var(--color-ops-info) 35%, transparent);
+  }
+  .badge-muted {
+    color: var(--color-ops-secondary);
+    background: color-mix(in srgb, var(--color-ops-secondary) 8%, transparent);
+    border-color: color-mix(in srgb, var(--color-ops-secondary) 25%, transparent);
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ops-muted);
+  }
+
+  .field-input {
+    height: 38px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 8px;
+    border: 1px solid var(--color-ops-line);
+    background: var(--color-ops-raised);
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--color-ops-text);
+    outline: none;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .field-input::placeholder {
+    color: color-mix(in srgb, var(--color-ops-muted) 75%, transparent);
+  }
+  .field-input:focus {
+    border-color: var(--color-ops-accent-dim);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ops-accent) 14%, transparent);
+  }
+
+  .live-dot {
+    position: relative;
+    display: inline-flex;
+    width: 7px;
+    height: 7px;
+    flex: none;
+  }
+  .live-dot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: var(--color-ops-safe);
+  }
+  .live-dot--live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: var(--color-ops-safe);
+    animation: pulse-ring 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes sos-flash {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-ops-sos) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-ops-sos) 8%, transparent);
+  }
+}
+
+/* ================================================================
+   Motion primitives — skeletons, reveals, map pulses
+   ================================================================ */
+
+/* Shimmering skeleton for loading regions */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-ops-raised) 88%, transparent);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-ops-text) 8%, transparent),
+    transparent
+  );
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Page / panel entrance */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  animation: rise-in 420ms var(--ease-out-expo) both;
+}
+
+.reveal-stagger > * {
+  animation: rise-in 460ms var(--ease-out-expo) backwards;
+}
+.reveal-stagger > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+.reveal-stagger > *:nth-child(2) {
+  animation-delay: 100ms;
+}
+.reveal-stagger > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.reveal-stagger > *:nth-child(n + 4) {
+  animation-delay: 220ms;
+}
+
+/* SOS button breathing (used while a dispatch is pending) */
+.btn-sos-pending {
+  animation: sos-flash 1.6s ease-in-out infinite;
+}
+
+/* Functional loading indicator: always rotates with a subtle motion so
+   loading never looks frozen. Exempted from the reduced-motion kill
+   below because a spinning loader conveys essential progress feedback. */
+.spinner {
+  animation: spinner-rotate 0.9s linear infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot--live::after,
+  .skeleton::after {
+    animation: none;
+  }
+  .reveal,
+  .reveal-stagger > * {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .spinner {
+    animation-duration: 1.4s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+/* ================================================================
+   Leaflet surface tuning for the terrain theme (both modes)
+   ================================================================ */
+
+.leaflet-container {
+  background: var(--color-ops-raised);
+  font-family: var(--font-sans);
+}
+
+.leaflet-tile-pane .disaster-basemap {
+  filter: var(--map-basemap-filter);
+}
+
+.leaflet-tile-pane .satellite-basemap {
+  filter: var(--map-satellite-filter);
+}
+
+/* Smooth, quiet interactions on every vector layer */
+.leaflet-interactive {
+  transition:
+    stroke-width 160ms ease,
+    fill-opacity 160ms ease;
+}
+
+/* Popups: themed glass cards for cluster, hexbin and incident details. */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--color-ops-panel) !important;
+  color: var(--color-ops-text) !important;
+  border: 1px solid var(--color-ops-line-strong);
+  box-shadow: 0 16px 44px var(--color-ops-shadow);
+}
+
+/* Popups auto-fit the viewport: cap width and let tall content scroll
+   instead of spilling off-screen at any map edge. */
+.leaflet-popup-content-wrapper {
+  max-width: min(92vw, 340px);
+}
+
+.leaflet-popup-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.leaflet-popup-content {
+  margin: 14px 16px;
+  font-family: var(--font-sans);
+  color: var(--color-ops-text);
+}
+
+.map-pop__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-ops-muted);
+  margin-bottom: 4px;
+}
+
+.map-pop__title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ops-text);
+  margin-bottom: 8px;
+}
+
+.map-pop__body {
+  font-size: 12px;
+  color: var(--color-ops-secondary);
+  line-height: 1.8;
+  border-top: 1px solid var(--color-ops-line);
+  padding-top: 8px;
+}
+
+.map-pop__body strong {
+  color: var(--color-ops-text);
+  font-weight: 600;
+}
+
+.map-pop__link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--color-ops-accent);
+  text-decoration: none;
+}
+.map-pop__link:hover {
+  text-decoration: underline;
+}
+
+.map-pop__dispatch {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-ops-sos);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.map-pop__dispatch:hover {
+  background: var(--color-ops-sos-strong);
+}
+
+.leaflet-popup-close-button {
+  color: var(--color-ops-muted) !important;
+}
+.leaflet-popup-close-button:hover {
+  color: var(--color-ops-text) !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 8px 24px var(--color-ops-shadow) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  border: 1px solid var(--color-ops-line) !important;
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--color-ops-panel) 88%, transparent);
+}
+
+.leaflet-control-zoom a {
+  background: transparent;
+  color: var(--color-ops-secondary);
+  border-color: var(--color-ops-line);
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-ops-overlay);
+  color: var(--color-ops-text);
+}
+
+.leaflet-control-attribution {
+  background: var(--color-ops-glass) !important;
+  backdrop-filter: blur(8px);
+  color: var(--color-ops-muted) !important;
+  font-size: 10px;
+  padding: 2px 6px;
+}
+.leaflet-control-attribution a {
+  color: var(--color-ops-secondary) !important;
+}
+
+.leaflet-control-scale-line {
+  background: var(--color-ops-glass);
+  border-color: var(--color-ops-line-strong);
+  color: var(--color-ops-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.leaflet-tooltip {
+  background: var(--color-ops-panel);
+  color: var(--color-ops-text);
+  border: 1px solid var(--color-ops-line-strong);
+  border-radius: 6px;
+  box-shadow: 0 8px 20px var(--color-ops-shadow);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 9px;
+}
+.leaflet-tooltip-top::before {
+  border-top-color: var(--color-ops-line-strong);
+}
+
+/* User location dot — Google-Maps-style positioning marker (pure CSS,
+   so it themes automatically via the accent token). */
+.user-location-dot-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.user-location-dot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.user-location-dot__core {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--color-ops-accent);
+  border: 2.5px solid var(--color-ops-dot-ring);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-ops-accent) 85%, transparent);
+}
+.user-location-dot__halo {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-ops-accent) 26%, transparent);
+  animation: user-pulse 2.4s ease-out infinite;
+}
+
+@keyframes user-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Critical incidents breathe on the operational map */
+.critical-pulse {
+  animation: critical-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes critical-pulse {
+  0%,
+  100% {
+    fill-opacity: 0.95;
+  }
+  50% {
+    fill-opacity: 0.4;
+  }
 }

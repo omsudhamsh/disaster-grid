@@ -4,11 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes.crisis import router as crisis_router
+from routes.dispatch import router as dispatch_router
 from routes.fusion import router as fusion_router
+from routes.geo import router as geo_router
 from routes.incidents import router as incidents_router
 from routes.imagery import router as imagery_router
 from routes.resources import router as resources_router
 from routes.sensors import router as sensors_router
+from routes.social import router as social_router
 
 app = FastAPI(
     title="Disaster Grid API",
@@ -22,6 +25,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
         os.getenv("FRONTEND_URL", "https://disaster-grid.vercel.app"),
     ],
     allow_credentials=True,
@@ -58,6 +63,21 @@ app.include_router(
     resources_router,
     prefix="/api/resources",
     tags=["Resources"],
+)
+app.include_router(
+    social_router,
+    prefix="/api/social",
+    tags=["Social Intelligence"],
+)
+app.include_router(
+    dispatch_router,
+    prefix="/api/dispatch",
+    tags=["Rescue Dispatch"],
+)
+app.include_router(
+    geo_router,
+    prefix="/api/geo",
+    tags=["Location Safety"],
 )
 
 

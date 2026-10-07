@@ -12,9 +12,10 @@ USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 CACHE_TTL_SECONDS = 300
 
-# South India reference point
-CENTER_LAT = 13.0827
-CENTER_LON = 80.2707
+# PAN India reference point (central India) and coverage radius.
+CENTER_LAT = 22.5937
+CENTER_LON = 78.9629
+COVERAGE_RADIUS_KM = 3200
 
 _cache = {"timestamp": 0.0, "earthquakes": [], "weather": None}
 
@@ -30,7 +31,7 @@ async def _fetch_live_feeds():
         "minmagnitude": 2.5,
         "latitude": CENTER_LAT,
         "longitude": CENTER_LON,
-        "maxradiuskm": 1200,
+        "maxradiuskm": COVERAGE_RADIUS_KM,
     }
     weather_params = {
         "latitude": CENTER_LAT,

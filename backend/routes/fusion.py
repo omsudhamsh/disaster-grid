@@ -5,11 +5,11 @@ from fastapi import APIRouter
 
 from services import nlp
 from services.fusion import build_grid_fusion
+from services.live_incidents import get_aggregated_incidents
 
 router = APIRouter()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-INCIDENTS_FILE = BASE_DIR / "data" / "incidents.json"
 MESSAGES_FILE = BASE_DIR / "data" / "messages.json"
 SENSORS_FILE = BASE_DIR / "data" / "sensors.json"
 
@@ -22,9 +22,9 @@ def _load(path):
 
 
 @router.get("/")
-def get_fusion_data():
+async def get_fusion_data():
     """Ranked multimodal fusion heat map with per-cell XAI rationale."""
-    incidents = _load(INCIDENTS_FILE)
+    incidents, live_sources, updated_at = await get_aggregated_incidents()
     raw_messages = _load(MESSAGES_FILE)
     sensors = _load(SENSORS_FILE)
 
@@ -51,4 +51,6 @@ def get_fusion_data():
         "cell_count": len(cells),
         "cells": cells,
         "top": cells[0] if cells else None,
+        "live_sources": live_sources,
+        "generated_at": updated_at,
     }

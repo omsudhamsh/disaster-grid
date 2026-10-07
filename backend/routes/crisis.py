@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from services import nlp
+from services import nlp, social
 
 router = APIRouter()
 
@@ -38,14 +38,44 @@ class AnalyzeRequest(BaseModel):
 
 
 @router.get("/")
-def get_crisis_messages(
+async def get_crisis_messages(
     urgency_level: int | None = Query(None, ge=1, le=5),
     disaster: str | None = None,
     region: str | None = None,
+    live: bool = Query(True, description="Include the live social feed"),
 ):
     """Crisis message feed with NLP extraction, filterable by urgency /
-    disaster tag / region."""
+    disaster tag / region. Merges live bot-screened social intelligence
+    (news desks, eNewspapers, Reddit, ReliefWeb) with the message corpus."""
     enriched = [enrich(message) for message in load_messages()]
+
+    if live:
+        posts, social_sources, updated_at = await social.get_social_feed()
+        for post in posts:
+            enriched.append({
+                "id": post["id"],
+                "source": post["platform_label"],
+                "platform": post["platform"],
+                "author": post["author"],
+                "author_verified": post["author_verified"],
+                "verification": post.get("verification"),
+                "text": post.get("text") or post.get("title", ""),
+                "url": post.get("url"),
+                "time": post.get("published_at"),
+                "live": True,
+                "analysis": {
+                    "location": post.get("location"),
+                    "state": post.get("state"),
+                    "disaster_tag": post.get("disaster_tag"),
+                    "urgency_level": post.get("urgency_level"),
+                    "urgency": post.get("urgency"),
+                    "people_affected": None,
+                    "required_aid": ["General Assistance"],
+                    "code_mixed": False,
+                },
+            })
+    else:
+        social_sources, updated_at = None, None
 
     if urgency_level is not None:
         enriched = [
@@ -69,6 +99,8 @@ def get_crisis_messages(
     return {
         "count": len(enriched),
         "messages": enriched,
+        "social_sources": social_sources,
+        "social_updated_at": updated_at,
         "urgency_scale": {
             "1": "Low",
             "2": "Guarded",

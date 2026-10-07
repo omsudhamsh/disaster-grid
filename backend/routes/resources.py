@@ -1,17 +1,10 @@
-import json
-from pathlib import Path
-
 from fastapi import APIRouter
+
+from services.live_incidents import get_aggregated_incidents
 
 router = APIRouter()
 
-INCIDENTS_FILE = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "incidents.json"
-)
-
-# Regional inventory pool across South India.
+# National logistics inventory across PAN India.
 INVENTORY = [
     {
         "id": "RES-01",
@@ -24,25 +17,25 @@ INVENTORY = [
     {
         "id": "RES-02",
         "type": "Medical Teams",
-        "location": "Hyderabad, Telangana",
-        "available": 5,
-        "total": 9,
+        "location": "New Delhi, Delhi",
+        "available": 6,
+        "total": 12,
         "status": "Available",
     },
     {
         "id": "RES-03",
         "type": "Survey Drones",
         "location": "Bengaluru, Karnataka",
-        "available": 4,
-        "total": 6,
+        "available": 5,
+        "total": 8,
         "status": "Available",
     },
     {
         "id": "RES-04",
         "type": "NDRF Squads",
         "location": "Vijayawada, Andhra Pradesh",
-        "available": 2,
-        "total": 4,
+        "available": 3,
+        "total": 6,
         "status": "Deployed",
     },
     {
@@ -56,9 +49,25 @@ INVENTORY = [
     {
         "id": "RES-06",
         "type": "Water Supply Units",
-        "location": "Coimbatore, Tamil Nadu",
-        "available": 12,
+        "location": "Guwahati, Assam",
+        "available": 14,
         "total": 20,
+        "status": "Available",
+    },
+    {
+        "id": "RES-07",
+        "type": "Medical Teams",
+        "location": "Kolkata, West Bengal",
+        "available": 4,
+        "total": 7,
+        "status": "Available",
+    },
+    {
+        "id": "RES-08",
+        "type": "Relief Camps",
+        "location": "Lucknow, Uttar Pradesh",
+        "available": 7,
+        "total": 10,
         "status": "Available",
     },
 ]
@@ -84,13 +93,9 @@ def _allocation_for(incident):
 
 
 @router.get("/")
-def get_resources():
+async def get_resources():
     """Resource inventory plus dynamic allocation per active incident."""
-    try:
-        with INCIDENTS_FILE.open("r", encoding="utf-8") as file:
-            incidents = json.load(file)
-    except (OSError, json.JSONDecodeError):
-        incidents = []
+    incidents, _, _ = await get_aggregated_incidents()
 
     active = sorted(
         incidents,
