@@ -23,7 +23,7 @@ import httpx
 
 from services.geo import is_inside_india
 
-NASA_API_KEY = "GYcxoL2hG8E0cAS6yYg2lcHYwpWdtMhhkF02t5U9"
+NASA_API_KEY = "HfRCgKQdDMWtgndHchbpg9NNdCTgPKbdtfjkdJnk"
 
 EONET_URL = "https://eonet.gsfc.nasa.gov/api/v3/events"
 LANDSAT_URL = "https://api.nasa.gov/planetary/earth/imagery"
